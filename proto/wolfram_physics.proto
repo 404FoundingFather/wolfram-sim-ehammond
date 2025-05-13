@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package wolfram_physics_simulator;
+
+// Service Definition (F2.1)
+service WolframPhysicsSimulatorService {
+  rpc InitializeSimulation(InitializeRequest) returns (InitializeResponse);
+  rpc StepSimulation(StepRequest) returns (StepResponse);
+  rpc RunSimulation(RunRequest) returns (stream SimulationStateUpdate);
+  rpc StopSimulation(StopRequest) returns (StopResponse);
+  rpc GetCurrentState(GetCurrentStateRequest) returns (SimulationStateUpdate);
+}
+
+// Message Definitions (F2.2)
+
+// Basic data types
+message Atom {
+  string id = 1;
+}
+
+message Relation {
+  repeated string atom_ids = 1; // ordered list of atom IDs forming the hyperedge
+}
+
+message HypergraphState {
+  repeated Atom atoms = 1;
+  repeated Relation relations = 2;
+}
+
+message SimulationEvent {
+  string id = 1;
+  string rule_id_applied = 2;
+  repeated string atoms_involved_input = 3;
+  repeated string atoms_involved_output = 4;
+  // (simplified for MVP)
+}
+
+// RPC Request and Response Messages
+
+message InitializeRequest {
+  // Can specify an initial hypergraph or select a predefined initial state.
+  // Can specify the rule(s) to use (from the hardcoded set).
+  HypergraphState initial_hypergraph = 1; // Optional: user can provide an initial state
+  string predefined_initial_state_id = 2; // Optional: ID of a predefined state
+  repeated string rule_ids_to_use = 3;    // Optional: IDs of rules to use (from hardcoded set)
+}
+
+message InitializeResponse {
+  bool success = 1;
+  string message = 2; // e.g., "Initialization successful" or error message
+  HypergraphState initial_hypergraph_state = 3;
+}
+
+message StepRequest {
+  int32 num_steps = 1; // For MVP, likely just 1
+}
+
+message StepResponse {
+  HypergraphState new_hypergraph_state = 1;
+  repeated SimulationEvent events_occurred = 2;
+  int64 current_step_number = 3;
+}
+
+message RunRequest {
+  int32 update_interval_ms = 1; // Optional: delay between updates in milliseconds
+}
+
+// SimulationStateUpdate is used for RunSimulation stream and GetCurrentState
+message SimulationStateUpdate {
+  HypergraphState current_graph = 1;
+  repeated SimulationEvent recent_events = 2;
+  int64 step_number = 3;
+}
+
+message StopRequest {
+  // (Empty for MVP)
+}
+
+message StopResponse {
+  bool success = 1;
+  string message = 2; // e.g., "Simulation stopped"
+}
+
+message GetCurrentStateRequest {
+  // (Empty for MVP)
+}
+
+// GetCurrentState returns SimulationStateUpdate 
