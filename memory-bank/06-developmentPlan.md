@@ -57,10 +57,21 @@ The MVP is structured into three primary phases:
     *   **"Continuous" Simulation (Fixed-Point Seeking):** Implement functionality to run steps repeatedly until no more rules can be applied or a step limit is reached.
     *   **Event Definition:** An "event" corresponds to a single rewrite operation (a specific rule applied to a specific match at a specific "time"/step).
 
-*   **F1.6: State Serialization & Deserialization**
-    *   **Purpose:** Saving/loading simulation state, debugging, and potentially for inter-process communication (though gRPC handles the primary API).
-    *   **Format:** Use a robust, versionable format. Protocol Buffers (defined in `.proto`) are recommended for the Rust engine's internal state as well, or alternatively `serde` with `bincode` (binary) or `JSON` (human-readable for debugging). For MVP, `serde` with `JSON` is acceptable for ease of inspection.
-    *   **Content:** Serialize the full hypergraph (atoms, relations), current step number, and potentially the history of events if causal graphs are to be explored later.
+*   **F1.6: Event Management & State Transmission**
+    *   **Purpose:** Identifying distinct update "events" (application of a rule) and serializing the current hypergraph state efficiently for gRPC transmission. (Formerly combined with broader serialization, now more focused on transient state for API).
+    *   **Content:** `HypergraphState` for transmission will include atoms, relations, and current step number. `SimulationEvent` details will be part of `SimulationStateUpdate`.
+
+*   **F1.7: Hypergraph Persistence (NEW)**
+    *   **Purpose:** To allow users to save the current hypergraph state to a file and load a hypergraph state from a file, including from a set of predefined example hypergraphs. This is crucial for testing, demonstrations, and user workflow.
+    *   **Save Hypergraph:**
+        *   Mechanism: Use `serde` to serialize the full `HypergraphState` (atoms, relations, possibly step number if relevant to the saved state) to a JSON file.
+        *   Filename: User-specified or a default naming convention.
+    *   **Load Hypergraph:**
+        *   Mechanism: Use `serde` to deserialize a `HypergraphState` from a JSON file. This loaded state will replace the current simulation's hypergraph.
+        *   Source: User-selected file or a selection from packaged predefined example files.
+    *   **Predefined Hypergraphs:**
+        *   A collection of 3-5 example hypergraph JSON files (e.g., "empty_graph.json", "simple_cycle.json", "small_branching.json") will be included as assets. These can be generated offline (potentially with AI assistance by developers) to showcase different initial conditions or test specific rule interactions.
+    *   **Format:** JSON for MVP for readability. `serde` ensures this.
 
 ### Phase 2: gRPC Service Implementation
 
@@ -68,10 +79,10 @@ The MVP is structured into three primary phases:
 **Goal:** Expose the simulation engine's capabilities via a robust and well-defined gRPC API.
 
 **Key Deliverables:**
-*   **F2.1**: gRPC Service Definition (`WolframPhysicsSimulatorService` with RPCs aligned with PRD: `InitializeSimulation`, `StepSimulation`, `RunSimulation` (streaming), `StopSimulation`, `GetCurrentState`).
+*   **F2.1**: gRPC Service Definition (`WolframPhysicsSimulatorService` with RPCs aligned with PRD: `InitializeSimulation`, `StepSimulation`, `RunSimulation` (streaming), `StopSimulation`, `GetCurrentState`, **`SaveHypergraph` (New)**, **`LoadHypergraph` (New)**).
     *   `SetRules` (for dynamic rule loading) and `GetHypergraphSlice` (for partial graph fetching) are considered post-MVP features.
     *   The PRD's streaming `RunSimulation` RPC will be the primary method for continuous evolution. Client-side logic can manage running this stream until a desired condition (e.g., fixed point, step limit) is met if a "run to end" behavior is needed without a dedicated non-streaming RPC.
-*   **F2.2**: Protocol Buffer Message Definitions (Aligned with PRD: `Atom`, `Relation`, `HypergraphState`, `SimulationEvent`, `SimulationStateUpdate`, plus request/response messages for each RPC) - **Initial setup complete with basic messages.**
+*   **F2.2**: Protocol Buffer Message Definitions (Aligned with PRD: `Atom`, `Relation`, `HypergraphState`, `SimulationEvent`, `SimulationStateUpdate`, plus request/response messages for each RPC, **including new messages for `SaveHypergraphRequest`, `SaveHypergraphResponse`, `LoadHypergraphRequest`, `LoadHypergraphResponse`**) - Initial setup to be extended.
     *   Ensure messages are well-structured for efficiency and clarity.
 *   **F2.3**: Integration of gRPC service with the Rust simulation engine.
     *   The gRPC server methods will call directly into the Rust simulation engine's public API.
@@ -82,12 +93,15 @@ The MVP is structured into three primary phases:
 **Timeline:** [To be defined - Estimated Z weeks, can overlap with Phase 2]
 **Goal:** Provide an intuitive web interface for users to interact with, control, and visualize simulations.
 
-**Key Deliverables:** *(Largely as before, with minor clarifications)*
+**Key Deliverables:** *(Largely as before, with minor clarifications and additions)*
 *   **F3.1**: gRPC-Web Client Integration - **Initial setup complete (React with Vite, gRPC-Web client generation configured).**
 *   **F3.2**: UI Controls:
     *   Initialize simulation (e.g., with a predefined initial hypergraph or a simple editor).
     *   Input for rule definitions (if `SetRules` gRPC endpoint is implemented).
     *   Buttons: Step, Run (continuous/to end), Stop, Reset.
+    *   **New Buttons/Controls:**
+        *   "Save Hypergraph" button (triggers F2.1 `SaveHypergraph` RPC).
+        *   "Load Hypergraph" button/dialog (triggers F2.1 `LoadHypergraph` RPC, allowing selection from user file or predefined examples).
 *   **F3.3**: Hypergraph Visualization:
     *   2D rendering of atoms (nodes) and relations (hyperedges - potentially represented by connecting nodes to a central "relation node" or using more complex hyperedge drawing techniques).
     *   Dynamic updates reflecting state changes from the backend.
@@ -131,7 +145,23 @@ The MVP is structured into three primary phases:
 *   **Dependencies:** Sprint 1 completion.
 *   **Owner/Est:** [TBD]
 
-*(Further sprints to be detailed for F1.5, F1.6, Phase 2, and Phase 3)*
+**Sprint 3 (Example - Could be merged or reordered): Hypergraph Persistence & Simulation Loop Refinements (Focus: F1.7, F1.5, F1.6)**
+*   **Timeline:** [Start Date] - [End Date]
+*   **Goal:** Implement save/load for hypergraphs and refine simulation step/event logic.
+*   **Tasks:**
+    1.  Implement `serde` serialization for `HypergraphState` to JSON (F1.7).
+    2.  Implement `serde` deserialization for `HypergraphState` from JSON (F1.7).
+    3.  Develop logic to save current hypergraph to a user-specified/default file (F1.7).
+    4.  Develop logic to load a hypergraph from a user-selected file, replacing current state (F1.7).
+    5.  Package 3-5 predefined hypergraph example JSON files as assets and implement loading them (F1.7).
+    6.  Implement the step-by-step simulation loop logic (match, select, apply) (F1.5).
+    7.  Implement "continuous" simulation mode (F1.5).
+    8.  Define and log/track simulation "events" (application of a rule) for transmission (F1.6).
+    9.  Unit tests for save/load functionality and simulation loop components.
+*   **Dependencies:** Sprint 1 & 2 completion.
+*   **Owner/Est:** [TBD]
+
+*(Sprints for Phase 2 gRPC and Phase 3 Frontend will need to incorporate tasks for the new Save/Load Hypergraph features)*
 
 ## 4. Development Workflow & QA
 
@@ -161,7 +191,7 @@ The MVP is structured into three primary phases:
     *   `wolfram_engine_core::matching`: `isomorphism.rs` (sub-hypergraph isomorphism logic).
     *   `wolfram_engine_core::evolution`: `rewriter.rs`, `scheduler.rs` (applying rules, event selection).
     *   `wolfram_engine_core::simulation`: `mod.rs` or `manager.rs` (main simulation loop, state management).
-    *   `wolfram_engine_core::serialization`: `mod.rs` (state saving/loading).
+    *   `wolfram_engine_core::serialization`: `mod.rs` (state saving/loading to/from files using `serde`, primarily for F1.7 Hypergraph Persistence).
 
 ### gRPC Service (F2.x)
 *   **Approach:** Use `tonic` in Rust. Define clear, versionable `.proto` files.
@@ -188,6 +218,7 @@ The MVP is structured into three primary phases:
 | **gRPC-Web Integration & Performance**              | Medium | Low        | Early, continuous testing of Rust-frontend communication. Optimize message sizes. Monitor network latency.                                                |
 | **Visualization Performance for Dynamic Graphs**      | Medium | Medium     | MVP: Basic visualization, limit graph size. Choose efficient library. Post-MVP: Incremental rendering, WebGL, layout optimizations.                |
 | **Defining "Correct" Behavior for Complex Rules**   | Medium | Medium     | Rigorous testing against known examples from Wolfram physics. Peer review of rule interpretations. Start with simple, well-understood rules.           |
+| **File I/O and Format Errors (New)**                | Medium | Medium     | Robust error handling for file operations (permissions, not found, corrupted JSON). Clear user feedback for failed save/load operations. Validate loaded data. |
 | **Team Member Availability / Skillset Gaps**        | Low    | Low        | Cross-training, clear documentation. Identify key expertise areas early.                                                                          |
 | **Choosing & Integrating JS Visualization Library** | Low    | Low        | Allocate specific time for evaluation and prototyping with 2-3 candidates. Prioritize ease of use and hypergraph-friendliness for MVP.                |
 

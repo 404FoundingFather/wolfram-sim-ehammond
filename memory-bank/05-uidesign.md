@@ -27,9 +27,13 @@ This document outlines the user interface design principles, components, and lay
 - **Button:** Standard buttons for "Initialize Simulation", "Step", "Run", "Stop", "Reset".
   - States: Default, Hover, Active, Disabled.
   - **Initial State:** "Initialize Simulation" enabled. "Step", "Run", "Stop", "Reset" initially disabled until a simulation is successfully initialized.
+  - **New Buttons:**
+    - "Save Hypergraph": Saves the current hypergraph state to a file. Enabled when a hypergraph is loaded/initialized.
+    - "Load Hypergraph": Opens a dialog to load a hypergraph from a user-selected file or a list of predefined examples. Always enabled (or leads to options that are conditionally enabled).
 - **Select Dropdown / Simple Editor (for Initialization - F3.2):**
-  - To choose a predefined initial hypergraph state OR potentially a very simple text-based input/editor for defining a small initial hypergraph (MVP focus on predefined).
+  - To choose a predefined initial hypergraph state OR potentially a very simple text-based input/editor for defining a small initial hypergraph (MVP focus on predefined). This dropdown will also serve as the list for predefined hypergraphs for the "Load Hypergraph" functionality.
   - To choose a predefined rewrite rule (from the hardcoded set).
+- **File Input (for Load Hypergraph):** A standard HTML file input, triggered by the "Load Hypergraph" mechanism, to select a local JSON file.
 - **Text Area / Input (for Rule Definition - F3.2, if `SetRules` gRPC is implemented):**
   - To allow users to input or modify rule definitions if this feature is included beyond hardcoded rules for MVP.
 - **Number Input (Optional for Run):** To specify update interval for continuous run (defaults to a reasonable value if omitted).
@@ -60,6 +64,10 @@ This document outlines the user interface design principles, components, and lay
 |   - [Initialize Button]    |                                     |
 |   - (Optional Rule Input)  |                                     |
 |                            |                                     |
+| [File Management]          |                                     |
+|   - [Load Hypergraph Button] |                                     |
+|   - [Save Hypergraph Button] |                                     |
+|                            |                                     |
 | [Simulation Control]       |  [Hypergraph Visualization Area]    |
 |   - [Run Button]           |  (Atoms as circles,                |
 |   - [Stop Button]          |   relations as lines/connections)   |
@@ -82,10 +90,10 @@ This document outlines the user interface design principles, components, and lay
 ## User Flows
 
 ### Basic Simulation Flow
-1.  **User selects/defines** an initial state using a dropdown or simple editor.
+1.  **User selects/defines** an initial state using a dropdown or simple editor, OR **clicks "Load Hypergraph"** and selects a predefined example or a local file.
 2.  **User selects** a predefined rewrite rule from a dropdown (or potentially inputs a rule if that feature is active).
-3.  **User clicks** "Initialize Simulation" button.
-    - System: Backend initializes, sends initial hypergraph state to frontend. Visualization updates.
+3.  **User clicks** "Initialize Simulation" button (if not loading an existing hypergraph that implicitly initializes).
+    - System: Backend initializes/loads, sends initial hypergraph state to frontend. Visualization updates. Save/Step/Run/Stop/Reset buttons become appropriately enabled/disabled.
 4.  **User clicks** "Step" button.
     - System: Backend performs one simulation step, sends updated state. Visualization updates. Status (step number) updates.
 5.  **User clicks** "Run" button.
@@ -93,7 +101,9 @@ This document outlines the user interface design principles, components, and lay
 6.  **User clicks** "Stop" button.
     - System: Backend stops continuous simulation. Visualization remains at the last state.
 7.  **User clicks** "Reset" button.
-    - System: Frontend clears the current visualization and status displays (step, atom/relation counts, messages). Backend is requested to reset its internal state to be ready for a new initialization (or simply the frontend stops interacting with the old simulation instance if the backend is stateless between distinct `InitializeSimulation` calls). The selected initial state and rule in the UI dropdowns remain unchanged. Simulation control buttons ("Step", "Run", "Stop") become disabled. "Initialize Simulation" button remains/becomes enabled.
+    - System: Frontend clears the current visualization and status displays (step, atom/relation counts, messages). Backend is requested to reset its internal state to be ready for a new initialization (or simply the frontend stops interacting with the old simulation instance if the backend is stateless between distinct `InitializeSimulation` calls). The selected initial state and rule in the UI dropdowns remain unchanged. Simulation control buttons ("Step", "Run", "Stop", "Save Hypergraph") become disabled or reflect a no-active-simulation state. "Initialize Simulation" and "Load Hypergraph" buttons remain/become enabled.
+8.  **User clicks** "Save Hypergraph" button.
+    - System: Frontend prompts for a filename (optional, can default). Backend saves the current hypergraph state to the specified file. Confirmation message shown.
 
 ### Error Flow (Example: Backend Connection Lost)
 1.  User attempts an action (e.g., "Step").

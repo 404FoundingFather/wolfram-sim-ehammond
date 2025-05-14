@@ -33,6 +33,7 @@ This document serves as the source of truth for the product we are building, def
 *   Hypergraph rewriting logic.
 *   Simulation loop (step-by-step, continuous run).
 *   Basic event management and state tracking.
+*   Hypergraph state persistence: Save to file, load from file (including predefined examples).
 
 ### gRPC Service (Backend API)
 *   `InitializeSimulation` RPC.
@@ -40,11 +41,13 @@ This document serves as the source of truth for the product we are building, def
 *   `RunSimulation` RPC (streaming state updates).
 *   `StopSimulation` RPC.
 *   `GetCurrentState` RPC.
-*   Protocol Buffer definitions for `Atom`, `Relation`, `HypergraphState`, `SimulationEvent`, `SimulationStateUpdate`.
+*   `SaveHypergraph` RPC.
+*   `LoadHypergraph` RPC.
+*   Protocol Buffer definitions for `Atom`, `Relation`, `HypergraphState`, `SimulationEvent`, `SimulationStateUpdate`, and new request/response types for save/load.
 
 ### Web Frontend (TypeScript SPA)
 *   gRPC-Web client integration.
-*   UI controls: Initialize, Step, Run, Stop.
+*   UI controls: Initialize, Step, Run, Stop, Save Hypergraph, Load Hypergraph (file & predefined).
 *   2D hypergraph visualization (nodes for atoms, lines/connections for relations).
 *   Dynamic updates to visualization based on backend state.
 *   Display of current step number, atom/relation counts.
@@ -63,14 +66,15 @@ This document serves as the source of truth for the product we are building, def
 
 ## Future Expansion
 *   User-defined rules (textual or graphical input).
-*   Loading/saving simulation configurations.
+*   Loading/saving simulation configurations (rules, parameters, etc.).
+*   Live AI-driven hypergraph generation from user prompts.
 *   More sophisticated visualization (3D, causal graphs).
 *   Performance optimizations.
 *   Exploration of multiway systems.
 *   Exporting simulation data and visualizations.
 
 ## Constraints
-*   MVP scope is limited to core functionality (no user-defined rules, advanced viz, etc. as per PRD Non-Goals).
+*   MVP scope is limited to core functionality (e.g., no user-defined rules, advanced viz, etc. as per PRD Non-Goals, but now includes hypergraph save/load).
 *   Focus on desktop browser as primary target.
 *   Initial performance will be for small graphs.
 *   Limited set of hardcoded rules for MVP.

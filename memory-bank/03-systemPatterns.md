@@ -17,7 +17,7 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 *   **Web Frontend (SPA):** Renders the UI, sends user commands to the backend, and visualizes received hypergraph states.
 
 ### Component Interactions
-1.  The Frontend UI sends user requests (e.g., initialize, step, run, stop) to the Backend gRPC Service.
+1.  The Frontend UI sends user requests (e.g., initialize, step, run, stop, save hypergraph, load hypergraph) to the Backend gRPC Service.
 2.  The gRPC Service invokes the appropriate functions within the Rust Simulation Engine.
 3.  The Simulation Engine computes the new hypergraph state or performs the requested action.
 4.  The gRPC Service sends the updated hypergraph state (or confirmation) back to the Frontend.
@@ -45,10 +45,9 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
         *   `simulation::mod.rs` or `simulation::manager.rs` (main simulation loop)
         *   `evolution::scheduler.rs` (for event selection if complex)
 *   **State Serialization:**
-    *   **Purpose:** To save and load simulation states.
-    *   **Implementation:** Using `serde` for serialization to formats like JSON (for MVP) or binary formats.
-    *   **Key Classes/Components:** Module within `wolfram_engine_core`:
-        *   `serialization::mod.rs`
+    *   **Purpose:** Primarily for **F1.7 Hypergraph Persistence**: to save the current `HypergraphState` to a file (e.g., JSON) and load a `HypergraphState` from a file. This allows users to persist and resume simulations or work with predefined examples. Also supports **F1.6 Event Management & State Transmission** by ensuring the hypergraph state can be structured for gRPC messages, though the direct serialization for gRPC is handled by Protobuf mechanisms.
+    *   **Implementation:** Using `serde` for serialization/deserialization to/from file formats like JSON (for MVP).
+    *   **Key Classes/Components:** Module within `wolfram_engine_core` (e.g., `serialization::mod.rs`) will contain logic for file I/O and `serde` integration for F1.7.
 *   **In-Memory State Management (MVP):**
     *   **Purpose:** To hold the current simulation state.
     *   **Implementation:** The entire hypergraph is stored in RAM within the Rust process. No database is used for MVP.
@@ -71,11 +70,11 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 ### Communication (gRPC / gRPC-Web)
 *   **Service-Oriented Interface:**
     *   **Purpose:** To define a clear contract between frontend and backend.
-    *   **Implementation:** A `.proto` file defines the `WolframPhysicsSimulatorService` with specific RPC methods for each action.
+    *   **Implementation:** A `.proto` file defines the `WolframPhysicsSimulatorService` with specific RPC methods for each action, including `InitializeSimulation`, `StepSimulation`, `RunSimulation`, `StopSimulation`, `GetCurrentState`, `SaveHypergraph`, and `LoadHypergraph`.
     *   **Key Classes/Components:** `wolfram_physics.proto`, generated client stubs, backend service implementation.
 *   **Request-Response Pattern:**
     *   **Purpose:** For operations that have a single request and a single response.
-    *   **Implementation:** Used for `InitializeSimulation`, `StepSimulation`, `StopSimulation`, `GetCurrentState`.
+    *   **Implementation:** Used for `InitializeSimulation`, `StepSimulation`, `StopSimulation`, `GetCurrentState`, `SaveHypergraph`, `LoadHypergraph`.
 *   **Server-Streaming RPC:**
     *   **Purpose:** For continuous updates from the server to the client.
     *   **Implementation:** Used for `RunSimulation`, where the backend continuously streams `SimulationStateUpdate` messages.
@@ -122,7 +121,8 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 ```
 
 ### Module Responsibilities
-*   **`backend/wolfram_engine_core`**: Contains all core Rust simulation engine logic (data structures, rules, matching, evolution, simulation loop, serialization).
+*   **`backend/wolfram_engine_core`**: Contains all core Rust simulation engine logic (data structures, rules, matching, evolution, simulation loop).
+    *   The `serialization` submodule specifically handles file-based saving and loading of `HypergraphState` objects using `serde` (for F1.7).
 *   **`backend/grpc_server`**: Implements the gRPC service, acting as a bridge to the `wolfram_engine_core` library.
 *   **`frontend/src`**: Contains all TypeScript SPA frontend code, including UI components, API client, and state management.
 *   **`proto` (top-level)**: Canonical location for Protocol Buffer definitions.
@@ -159,6 +159,38 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 6.  **Frontend:** `apiClient.ts` receives each `SimulationStateUpdate` message from the stream.
 7.  **Frontend:** Updates `simulationStore.ts` and UI components reactively for each update.
 
+### Save Hypergraph Execution (NEW)
+1.  **Frontend:** User clicks "Save Hypergraph" button.
+2.  **Frontend:** `SimulationControls.tsx` (or similar) may prompt for a filename (or use a default) and then calls a function in `apiClient.ts`.
+3.  **Frontend:** `apiClient.ts` sends a `SaveHypergraphRequest` (possibly with the suggested filename) to the Backend gRPC `SaveHypergraph` RPC.
+4.  **Backend (grpc_server):** The `SaveHypergraph` RPC handler in `server.rs` receives the request.
+5.  **Backend (grpc_server):** The handler calls the appropriate method in `wolfram_engine_core` (e.g., `simulation_manager.save_current_hypergraph(filename_suggestion)`).
+6.  **Backend (wolfram_engine_core):**
+    a.  The simulation manager retrieves the current `HypergraphState`.
+    b.  The `serialization` module serializes this state to a JSON string using `serde`.
+    c.  The simulation manager (or serialization module) writes this string to a file, determining the final filename (e.g., respecting user suggestion or creating a new one).
+7.  **Backend (grpc_server):** The `wolfram_engine_core` returns confirmation (e.g., actual path of the saved file) to the RPC handler.
+8.  **Backend (grpc_server):** The RPC handler constructs a `SaveHypergraphResponse` and sends it back to the Frontend.
+9.  **Frontend:** `apiClient.ts` receives the `SaveHypergraphResponse`.
+10. **Frontend:** Displays a confirmation message to the user (e.g., "Hypergraph saved to my_simulation.json").
+
+### Load Hypergraph Execution (NEW)
+1.  **Frontend:** User clicks "Load Hypergraph" button and selects either a predefined example or a local file via a file input dialog.
+2.  **Frontend:** `SimulationControls.tsx` (or similar) calls a function in `apiClient.ts`, providing either an identifier for a predefined example or the content/path of the user-selected file.
+3.  **Frontend:** `apiClient.ts` sends a `LoadHypergraphRequest` to the Backend gRPC `LoadHypergraph` RPC. The request will contain the hypergraph data (if from a local file read by the client) or the identifier for a predefined example. (Alternatively, for local files, the frontend might just send the filename, and the backend reads it, depending on security/design choices). For MVP, let's assume the frontend can read the file content and send it, or send an identifier for a predefined one.
+4.  **Backend (grpc_server):** The `LoadHypergraph` RPC handler in `server.rs` receives the request.
+5.  **Backend (grpc_server):** The handler calls the appropriate method in `wolfram_engine_core` (e.g., `simulation_manager.load_hypergraph_from_data(hypergraph_json_string)` or `simulation_manager.load_predefined_hypergraph(example_id)`).
+6.  **Backend (wolfram_engine_core):**
+    a.  If loading from data: The `serialization` module deserializes the `HypergraphState` from the provided JSON string using `serde`.
+    b.  If loading a predefined example: The engine retrieves the example hypergraph data (e.g., from an embedded asset or a known file path) and deserializes it.
+    c.  The simulation manager validates the loaded `HypergraphState` (basic structural checks).
+    d.  The current simulation's `HypergraphState` is replaced with the newly loaded one. The simulation step number might be reset or set from the loaded data if present.
+7.  **Backend (grpc_server):** The `wolfram_engine_core` returns the new (loaded) `HypergraphState` to the RPC handler.
+8.  **Backend (grpc_server):** The RPC handler constructs a `LoadHypergraphResponse` (containing the `HypergraphState`) and sends it back to the Frontend.
+9.  **Frontend:** `apiClient.ts` receives the `LoadHypergraphResponse`.
+10. **Frontend:** The `simulationStore.ts` is updated with the new hypergraph state, step number, etc.
+11. **Frontend:** UI components (e.g., `HypergraphVisualizer.tsx`, status displays) react to store changes and re-render, displaying the loaded hypergraph.
+
 ## Error Handling Strategy
 *   **Backend:** Rust's `Result` type will be used extensively. Errors from the simulation engine will be translated into appropriate gRPC error statuses.
 *   **Frontend:** gRPC client calls will handle potential errors (network issues, backend errors). User-facing error messages will be displayed in the "Status Message Area".
@@ -166,8 +198,8 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 
 ## Security Considerations
 *   **Authentication/Authorization:** N/A for MVP. The application is designed to be run locally or in a trusted environment. No user accounts or specific access controls are implemented.
-*   **Data Protection:** Simulation data is transient and managed in memory by the backend for MVP. No sensitive data is stored persistently. Communication via gRPC is structured but not encrypted by default (gRPC-Web typically runs over HTTPS, providing transport layer security).
-*   **Input Validation:** Basic validation of gRPC request parameters (e.g., step counts) will be performed by the backend. The primary concern for MVP is stability rather than defending against malicious inputs.
+*   **Data Protection:** Simulation data is transient and managed in memory by the backend for MVP for active simulations. Saved hypergraph files (e.g., JSON) are stored on the file system as per user actions. File system permissions will govern access to these saved files. The application will need appropriate rights to read/write files in user-designated or application-specific locations for predefined examples. Communication via gRPC is structured but not encrypted by default (gRPC-Web typically runs over HTTPS, providing transport layer security).
+*   **Input Validation:** Basic validation of gRPC request parameters (e.g., step counts) will be performed by the backend. For loaded hypergraph files, the backend should perform validation (e.g., checking for malformed JSON, consistency of the data structure) to prevent errors or crashes and provide appropriate error feedback to the user. The primary concern for MVP is stability rather than defending against malicious inputs.
 *   **Other Security Measures:** For MVP, focus is on functional correctness. Standard secure coding practices will be followed (e.g., avoiding obvious panics in Rust, proper error handling).
 
 ## Scalability Considerations

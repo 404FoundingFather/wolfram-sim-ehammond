@@ -19,20 +19,29 @@ This document tracks the current status of development tasks using a Kanban-styl
 -   **F1.5: Simulation Loop & Event Management**
     -   Task: Implement step-by-step execution logic (match, select, apply). - [Owner TBD]
     -   Task: Implement "continuous" simulation (fixed-point seeking loop). - [Owner TBD]
-    -   Task: Define and log simulation "events". - [Owner TBD]
--   **F1.6: State Serialization & Deserialization**
-    -   Task: Implement `serde` with `JSON` for `Hypergraph` state. - [Owner TBD]
-    -   Task: Implement save-to-file and load-from-file functionality for simulation state. - [Owner TBD]
+-   **F1.6: State Serialization & Deserialization** (Now Event Management & State Transmission)
+    -   Task: Define and log/track simulation "events" (application of a rule) for transmission. - [Owner TBD]
+    -   Task: Ensure `HypergraphState` for gRPC includes necessary data (atoms, relations, step #). - [Owner TBD]
+-   **F1.7: Hypergraph Persistence (NEW)**
+    -   Task: Implement `serde` serialization for `HypergraphState` to JSON. - [Owner TBD]
+    -   Task: Implement `serde` deserialization for `HypergraphState` from JSON. - [Owner TBD]
+    -   Task: Implement Rust logic to save current hypergraph to a file. - [Owner TBD]
+    -   Task: Implement Rust logic to load a hypergraph from a file. - [Owner TBD]
+    -   Task: Package 3-5 predefined hypergraph JSON examples as assets. - [Owner TBD]
+    -   Task: Implement Rust logic to load predefined hypergraph examples. - [Owner TBD]
+    -   Task: Unit tests for hypergraph save/load functionality. - [Owner TBD]
 
 ### Phase 2: gRPC Service Implementation
--   **F2.1**: Implement gRPC Service Definition (`WolframPhysicsSimulatorService` with PRD RPCs: `InitializeSimulation`, `StepSimulation`, `RunSimulation` (streaming), `StopSimulation`, `GetCurrentState`) - [Owner TBD]
+-   **F2.1**: Implement gRPC Service Definition (RPCs: ..., `SaveHypergraph`, `LoadHypergraph`) - [Owner TBD]
     -   Task: Implement gRPC handler for `InitializeSimulation`. - [Owner TBD]
     -   Task: Implement gRPC handler for `StepSimulation`. - [Owner TBD]
     -   Task: Implement gRPC handler for `RunSimulation` (streaming). - [Owner TBD]
     -   Task: Implement gRPC handler for `StopSimulation`. - [Owner TBD]
     -   Task: Implement gRPC handler for `GetCurrentState`. - [Owner TBD]
--   **F2.2**: Ensure Protocol Buffer Message Definitions are finalized and match usage (PRD messages: `Atom`, `Relation`, `HypergraphState`, `SimulationEvent`, `SimulationStateUpdate`, plus relevant request/response messages) - [Owner TBD]
--   **F2.3**: Full Integration of gRPC service with the Rust simulation engine (expose all F1.x features through the defined MVP RPCs) - [Owner TBD]
+    -   **NEW**: Task: Implement gRPC handler for `SaveHypergraph`. - [Owner TBD]
+    -   **NEW**: Task: Implement gRPC handler for `LoadHypergraph`. - [Owner TBD]
+-   **F2.2**: Finalize Protocol Buffer Message Definitions (including for `SaveHypergraphRequest/Response`, `LoadHypergraphRequest/Response`) - [Owner TBD]
+-   **F2.3**: Full Integration of gRPC service with the Rust simulation engine (expose all F1.x features through MVP RPCs) - [Owner TBD]
     -   Task: Design and implement simulation state management (e.g., single global instance for MVP, potential for per-client/session if time allows and is deemed critical for MVP stability with multiple frontend interactions, though PRD implies single active simulation focus). - [Owner TBD]
 
 #### Post-MVP gRPC Considerations (Examples)
@@ -44,6 +53,8 @@ This document tracks the current status of development tasks using a Kanban-styl
     -   Task: Implement UI for Initialize simulation (predefined/simple editor). - [Owner TBD]
     -   Task: Implement UI for Rule definitions input (Post-MVP, if F2.1 `SetRules` is implemented). - [Owner TBD]
     -   Task: Implement UI Buttons: Step, Run, Stop, Reset. - [Owner TBD]
+    -   **NEW**: Task: Implement UI Button/Control for "Save Hypergraph". - [Owner TBD]
+    -   **NEW**: Task: Implement UI Button/Dialog for "Load Hypergraph" (from file or predefined). - [Owner TBD]
 -   **F3.3**: Hypergraph Visualization
     -   Task: Evaluate and select a 2D graph visualization library. - [Owner TBD]
     -   Task: Implement basic 2D rendering of atoms (nodes) and relations (hyperedges). - [Owner TBD]
@@ -76,6 +87,22 @@ This document tracks the current status of development tasks using a Kanban-styl
 -   Task: Implement variable binding and substitution logic (F1.3) - [Owner TBD]
 -   Task: Implement the hypergraph rewriting process (remove old, add new) (F1.4) - [Owner TBD]
 -   Task: Unit tests for matching and rewriting simple cases (F1.3, F1.4) - [Owner TBD]
+
+--- 
+
+## To Do (Sprint 3 - Example: Hypergraph Persistence & Simulation Loop Refinements - F1.7, F1.5, F1.6)
+**Goal:** Implement save/load for hypergraphs and refine simulation step/event logic.
+**Dependencies:** Sprint 1 & 2 completion.
+
+-   Task: Implement `serde` serialization for `HypergraphState` to JSON (F1.7) - [Owner TBD]
+-   Task: Implement `serde` deserialization for `HypergraphState` from JSON (F1.7) - [Owner TBD]
+-   Task: Develop logic to save current hypergraph to a user-specified/default file (F1.7) - [Owner TBD]
+-   Task: Develop logic to load a hypergraph from a user-selected file, replacing current state (F1.7) - [Owner TBD]
+-   Task: Package 3-5 predefined hypergraph example JSON files as assets and implement loading them (F1.7) - [Owner TBD]
+-   Task: Implement the step-by-step simulation loop logic (match, select, apply) (F1.5) - [Owner TBD]
+-   Task: Implement "continuous" simulation mode (F1.5) - [Owner TBD]
+-   Task: Define and log/track simulation "events" (application of a rule) for transmission (F1.6) - [Owner TBD]
+-   Task: Unit tests for save/load functionality and simulation loop components (F1.5, F1.6, F1.7) - [Owner TBD]
 
 --- 
 

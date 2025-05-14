@@ -32,13 +32,14 @@ This document outlines key architectural and scope decisions made for the Wolfra
 -   Binary relations as lines; ternary+ relations with a central conceptual point or simplified representation.
 -   Simple force-directed or basic fixed layout.
 -   Mobile responsiveness is a non-goal (desktop browser primary target) (Section 5).
+-   Hypergraphs loaded from files (F1.7) will be displayed using these visualization capabilities.
 
 ## 3. API Design (F2.1, F2.2)
 
 -   **Service Name**: `WolframPhysicsSimulatorService`
--   **Key RPCs**: `InitializeSimulation`, `StepSimulation`, `RunSimulation` (streaming), `StopSimulation`, `GetCurrentState`.
--   **Data Structures**: Defined using Protocol Buffers, including `Atom`, `Relation`, `HypergraphState`, `SimulationEvent`, `SimulationStateUpdate`.
--   Initial hypergraph and rules will be hardcoded or loaded from simple embedded structures in the backend (D1).
+-   **Key RPCs**: `InitializeSimulation`, `StepSimulation`, `RunSimulation` (streaming), `StopSimulation`, `GetCurrentState`, `SaveHypergraph`, `LoadHypergraph`.
+-   **Data Structures**: Defined using Protocol Buffers, including `Atom`, `Relation`, `HypergraphState`, `SimulationEvent`, `SimulationStateUpdate`, and new messages for save/load RPCs.
+-   Initial hypergraph and rules will be hardcoded or loaded from simple embedded structures in the backend (D1). Hypergraphs can also be loaded from files (F1.7).
 
 ## 4. Frontend Framework Choice (D2)
 
@@ -49,7 +50,8 @@ This document outlines key architectural and scope decisions made for the Wolfra
 ## 5. Non-Goals for MVP (Section 5)
 
 -   User-defined graphical rule editor.
--   Saving/loading arbitrary simulation states or rules.
+-   Saving/loading arbitrary simulation rules from files (hypergraph state saving/loading IS now in scope for MVP via F1.7).
+-   Live AI-driven hypergraph generation directly from user prompts within the application (offline AI-assisted creation of predefined examples is acceptable).
 -   Advanced visualization (3D, causal graphs, multiway systems).
 -   High-performance pattern matching for very large graphs.
 -   Distributed simulation.
@@ -71,11 +73,12 @@ This document outlines key architectural and scope decisions made for the Wolfra
 
 These decisions elaborate on the "how" for certain MVP features, as detailed in the refined development plan.
 
-*   **State Serialization & Persistence (F1.6):**
-    *   **Decision:** For MVP, simulation state persistence will be achieved by serializing the `Hypergraph` state to a file.
-    *   **Mechanism:** Use the `serde` library in Rust.
-    *   **Format (MVP):** JSON, chosen for human readability and ease of debugging during early development.
-    *   **Rationale:** Meets MVP need for saving/loading without a full database; JSON is simple for initial phase.
+*   **State Serialization & Persistence (F1.6 - now F1.7 for persistence, F1.6 for gRPC transmission state):**
+    *   **Decision (F1.7 - Hypergraph Persistence):** For MVP, hypergraph persistence will be achieved by serializing the `HypergraphState` to/from a file (user-chosen or predefined examples).
+    *   **Mechanism (F1.7):** Use the `serde` library in Rust.
+    *   **Format (F1.7, MVP):** JSON, chosen for human readability and ease of debugging during early development.
+    *   **Rationale (F1.7):** Meets critical MVP need for saving/loading hypergraphs for testing and basic persistence without a full database; JSON is simple for the initial phase.
+    *   **Decision (F1.6 - State for gRPC):** `HypergraphState` and `SimulationEvent` structures will be serialized via Protocol Buffers for gRPC communication as defined in the `.proto` file. This is for transient state transfer.
 
 *   **Pattern Matching Algorithm (F1.3):**
     *   **Decision:** Implement a basic, potentially backtracking, search algorithm for sub-hypergraph isomorphism.
@@ -98,3 +101,8 @@ These decisions elaborate on the "how" for certain MVP features, as detailed in 
 *   **Initial Rule Storage (F1.2):**
     *   **Decision:** Rewrite rules will be hardcoded directly in Rust for the MVP.
     *   **Rationale:** Simplifies initial development; dynamic rule parsing/definition is a post-MVP feature.
+
+*   **AI-Generated Hypergraphs (Scope for MVP):**
+    *   **Decision:** Direct, in-application AI generation of hypergraphs from user prompts is **deferred to post-MVP**.
+    *   **MVP Approach:** Developers can use AI tools offline to design and generate hypergraph structures, which can then be saved as JSON files and included as part of the predefined/example hypergraphs (F1.7) packaged with the application.
+    *   **Rationale:** Balances the utility of AI-designed test cases with MVP scope constraints by avoiding complex live LLM integration. Focuses MVP on core simulation and save/load mechanics.

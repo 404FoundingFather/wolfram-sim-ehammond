@@ -50,6 +50,11 @@ The MVP will focus on delivering a core, usable simulation experience.
   - The engine should identify distinct update "events" (application of a rule).
   - The engine should be able to serialize the current hypergraph state for transmission.
 
+- **F1.7: Hypergraph Persistence (New)**:
+  - **Save Hypergraph**: Implement functionality to serialize the current `HypergraphState` to a file (e.g., in JSON format for MVP).
+  - **Load Hypergraph**: Implement functionality to deserialize a `HypergraphState` from a file to initialize or replace the current simulation state.
+  - **Predefined Hypergraphs**: Include a small set of predefined hypergraph files as assets, loadable by the engine.
+
 ### 4.2. gRPC Service (Backend API)
 
 - **F2.1: Service Definition (WolframPhysicsSimulatorService)**:
@@ -69,6 +74,13 @@ The MVP will focus on delivering a core, usable simulation experience.
     - **GetCurrentStateRequest**: (Empty).
     - **SimulationStateUpdate**: The current hypergraph state.
 
+  - `rpc SaveHypergraph(SaveHypergraphRequest) returns (SaveHypergraphResponse)`:
+    - **SaveHypergraphRequest**: Optional filename/path suggestion.
+    - **SaveHypergraphResponse**: Confirmation of save, path to saved file.
+  - `rpc LoadHypergraph(LoadHypergraphRequest) returns (LoadHypergraphResponse)`:
+    - **LoadHypergraphRequest**: Filename/path to load, or identifier for a predefined hypergraph.
+    - **LoadHypergraphResponse**: Confirmation of load, initial hypergraph state (similar to InitializeResponse).
+
 - **F2.2: Message Definitions (Protocol Buffers)**:
   - **Atom**: `string id`
   - **Relation**: `repeated string atom_ids` (ordered list of atom IDs forming the hyperedge).
@@ -87,6 +99,8 @@ The MVP will focus on delivering a core, usable simulation experience.
     - "Step" (to advance the simulation by one update event).
     - "Run" (to start continuous simulation updates).
     - "Stop" (to pause continuous simulation).
+    - "Save Hypergraph" (to save the current hypergraph state to a file).
+    - "Load Hypergraph" (to load a hypergraph state from a file or a predefined example).
 
 - **F3.3: Hypergraph Visualization**:
   - Display the current hypergraph state in a 2D canvas or SVG area.
@@ -104,7 +118,7 @@ The MVP will focus on delivering a core, usable simulation experience.
 ## 5. Non-Goals (for MVP)
 
 - User-defined graphical rule editor.
-- Saving or loading arbitrary simulation states or rules from files.
+- Saving or loading arbitrary simulation rules from files (hypergraph state saving/loading IS now in scope).
 - Advanced visualization techniques (3D, complex hyperedge rendering, causal graph visualization, multiway system exploration).
 - High-performance pattern matching for very large graphs.
 - Distributed simulation capabilities.
@@ -143,7 +157,8 @@ The MVP will focus on delivering a core, usable simulation experience.
 ## 8. Future Considerations (Post-MVP)
 
 - User-defined rules (textual or graphical input).
-- Loading/saving simulation configurations.
+- Loading/saving simulation configurations (including rules, parameters etc.).
+- Live AI-driven hypergraph generation from user prompts.
 - More sophisticated visualization (3D, better hyperedge rendering, causal graphs).
 - Performance optimizations for larger graphs and more complex rules.
 - Exploration of multiway systems.

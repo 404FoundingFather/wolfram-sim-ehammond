@@ -32,6 +32,23 @@ This document tracks significant changes to the project in chronological order, 
     - Configured gRPC-Web client code generation for the frontend.
 
 ### Changed
+- **System Patterns and UI Design Alignment for Save/Load (2025-05-14):**
+    - Updated `memory-bank/03-systemPatterns.md` to reflect save/load RPCs, data flows, and security considerations for file I/O.
+    - Updated `memory-bank/05-uidesign.md` to include UI controls and user flows for hypergraph save/load functionality.
+    - Verified "Last Updated" dates for these files.
+
+- **MVP Scope Expansion: Hypergraph Save/Load Functionality (2025-05-14):**
+    - Added requirements for saving and loading hypergraph states to/from files (JSON for MVP) to the PRD (F1.7, F2.1, F3.2) and relevant memory bank files.
+    - This includes managing a set of predefined hypergraph examples.
+    - Deferred live AI-driven hypergraph generation from user prompts to post-MVP.
+    - Updated `docs/wolfram-sim-prd.md` (Sections 4.1, 4.2, 4.3, 5, 8).
+    - Updated `memory-bank/01-productVision.md` (Key Features, Future Expansion, Constraints).
+    - Updated `memory-bank/04-database.md` (Clarified file-based persistence for hypergraphs).
+    - Updated `memory-bank/06-developmentPlan.md` (Added F1.7, new tasks for F2.x & F3.x, example Sprint 3, risk assessment).
+    - Updated `memory-bank/07-kanban.md` (Added new tasks to backlog and Sprint 3 example).
+    - Updated `memory-bank/12-decisions.md` (API design, non-goals, persistence, AI generation scope).
+    - Updated `memory-bank/13-quick-reference.md` (Backend features, API, frontend controls, non-goals).
+
 - **Comprehensive Documentation Review & Alignment (2025-05-14):**
     - `docs/wolfram-sim-prd.md` reviewed and updated for clarity on hypergraph relation ordering and simulation loop rule application strategy.
     - All `memory-bank/` files (`00` through `07`, and `09` through `13` as applicable) reviewed for accuracy, consistency with the PRD, and readiness for development.
@@ -102,6 +119,10 @@ This document tracks significant changes to the project in chronological order, 
 - [Removed functionality]
 
 ## Project Milestones
+
+### MVP Scope Update: Hypergraph Save/Load - 2025-05-14
+- Added functionality to save and load hypergraph states to/from files, including predefined examples.
+- Aligned all relevant documentation (PRD, Memory Bank) with this scope change.
 
 ### Comprehensive Documentation Review & Finalization for Development Start - 2025-05-14
 - All project documentation (PRD, Memory Bank files) reviewed, updated, and synchronized to reflect current understanding as of 2025-05-14.

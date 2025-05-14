@@ -10,10 +10,14 @@ This document outlines data storage, relationships, and data management for the 
 
 For the Minimum Viable Product (MVP), the Wolfram Physics Simulator does **not** use a traditional persistent database. The simulation state, including the hypergraph (atoms and relations), is managed entirely **in-memory** by the Rust backend process.
 
-However, **State Serialization (F1.6)** is implemented to allow saving the current simulation state to a file and loading it back into memory. This provides a form of persistence for individual simulation instances.
-*   **Mechanism:** Utilizes the `serde` library in Rust.
-*   **Format (MVP):** JSON (for human readability and ease of debugging).
-*   **Future:** Binary formats (e.g., `bincode`) may be considered for performance.
+**Hypergraph Persistence (F1.7)** is now a core feature for MVP. This involves:
+*   **Saving Hypergraphs**: Users can save the current `HypergraphState` to a file.
+*   **Loading Hypergraphs**: Users can load a `HypergraphState` from a file, or select from a list of predefined hypergraph examples packaged with the application.
+*   **Mechanism**: Utilizes the `serde` library in Rust for serialization/deserialization.
+*   **Format (MVP):** JSON (for human readability and ease of debugging during initial development).
+*   **Future:** Binary formats (e.g., `bincode`) may be considered for performance and smaller file sizes post-MVP.
+
+This file-based save/load functionality provides the necessary persistence for hypergraphs in the MVP, distinct from temporary state serialization for gRPC transmission (previously F1.6, now F1.6 focuses more on event tracking and state for transmission).
 
 ## Data Models (In-Memory & Serialized Representation)
 
@@ -53,7 +57,7 @@ N/A for traditional database ERD. The relationships are primarily between the in
 
 ## Database Migrations
 
-N/A for MVP. If file formats for serialized state evolve, versioning within the serialized file might be needed.
+N/A for MVP regarding a traditional database. If file formats for serialized hypergraphs evolve, versioning within the serialized file might be needed, or simple backward compatibility strategies if changes are minor.
 
 ## Query Patterns
 
@@ -70,8 +74,8 @@ Direct struct/method access within the `wolfram_engine_core::hypergraph` and `wo
 
 ## Backup and Recovery
 
--   **MVP:** Achieved by users manually saving the simulation state to a file via the serialization feature. Recovery involves loading from such a file.
--   **Post-MVP (with database):** Standard database backup and recovery procedures would apply.
+-   **MVP:** Achieved by users manually saving the hypergraph state to a file via the "Save Hypergraph" feature. Recovery involves loading a hypergraph from such a file using the "Load Hypergraph" feature.
+-   **Post-MVP (with database):** Standard database backup and recovery procedures would apply if a database is introduced for managing user data or extensive simulation collections.
 
 ## Security Measures
 

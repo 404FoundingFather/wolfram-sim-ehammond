@@ -29,6 +29,7 @@ This guide provides a quick lookup for key terms, features, and identifiers from
 -   **Hypergraph Rewriting (F1.4)**: Applying matched rules.
 -   **Simulation Loop (F1.5)**: Step-by-step or continuous evolution.
 -   **Event Management (F1.6)**: Identifying update events, serializing state.
+-   **Hypergraph Persistence (F1.7)**: Save/load hypergraph state from/to files (JSON for MVP), including predefined examples.
 
 ## gRPC API Endpoints (F2.1)
 
@@ -37,11 +38,13 @@ This guide provides a quick lookup for key terms, features, and identifiers from
 -   `RunSimulation(RunRequest) returns (stream SimulationStateUpdate)`
 -   `StopSimulation(StopRequest) returns (StopResponse)`
 -   `GetCurrentState(GetCurrentStateRequest) returns (SimulationStateUpdate)`
+-   `SaveHypergraph(SaveHypergraphRequest) returns (SaveHypergraphResponse)`
+-   `LoadHypergraph(LoadHypergraphRequest) returns (LoadHypergraphResponse)`
 
 ## Frontend Features (TypeScript SPA - F3.x)
 
 -   **gRPC Client (F3.1)**: Communication with backend.
--   **Simulation Controls (F3.2)**: Initialize, Step, Run, Stop buttons.
+-   **Simulation Controls (F3.2)**: Initialize, Step, Run, Stop, Save Hypergraph, Load Hypergraph buttons.
 -   **Hypergraph Visualization (F3.3)**: 2D display of atoms and relations, dynamic updates.
     -   Binary relations: lines.
     -   Ternary+ relations: e.g., central node or common point.
@@ -58,7 +61,8 @@ This guide provides a quick lookup for key terms, features, and identifiers from
 ## Key Non-Goals for MVP (Section 5)
 
 -   User-defined rule editor.
--   Saving/loading arbitrary states/rules.
+-   Saving/loading arbitrary simulation rules (hypergraph state save/load is IN MVP).
+-   Live AI-driven hypergraph generation from prompt (deferred to post-MVP).
 -   Advanced visualization (3D, causal graphs, etc.).
 -   High-performance matching for very large graphs.
 -   Mobile responsiveness.
@@ -70,7 +74,7 @@ This guide provides a quick lookup for key terms, features, and identifiers from
 -   `matching`: Sub-hypergraph isomorphism logic.
 -   `evolution`: Rewriting logic, event scheduling/selection.
 -   `simulation`: Main simulation loop, state management.
--   `serialization`: State saving/loading logic (e.g., via `serde`).
+-   `serialization`: State saving/loading logic (e.g., via `serde` for F1.7 hypergraph persistence; Protobufs for F1.6 gRPC state transmission).
 
 ## Technical Choices (Section 6 - Design and Technical Considerations)
 
