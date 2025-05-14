@@ -1,6 +1,6 @@
 # AI Interaction Guidelines
 
-**Last Updated:** May 13, 2025
+**Last Updated:** May 14, 2025
 
 This document outlines guidelines for working with AI assistants (like GitHub Copilot, or other LLMs) on the Wolfram Physics Simulator MVP project.
 

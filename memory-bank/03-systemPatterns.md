@@ -1,6 +1,6 @@
 # System Patterns
 
-**Last Updated:** May 13, 2025
+**Last Updated:** May 14, 2025
 
 This document describes the architecture, design patterns, and code organization principles used in the Wolfram Physics Simulator MVP.
 
@@ -129,15 +129,35 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 
 ## Data Flow
 
-### [Process Name 1]
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
+### Simulation Step Execution
+1.  **Frontend:** User clicks "Step" button.
+2.  **Frontend:** `SimulationControls.tsx` calls a function in `apiClient.ts` (which uses the gRPC-Web client).
+3.  **Frontend:** `apiClient.ts` sends a `StepRequest` (e.g., for 1 step) to the Backend gRPC `StepSimulation` RPC.
+4.  **Backend (grpc_server):** The `StepSimulation` RPC handler in `server.rs` receives the request.
+5.  **Backend (grpc_server):** The handler calls the appropriate method in `wolfram_engine_core` (e.g., `simulation_manager.step(1)`).
+6.  **Backend (wolfram_engine_core):**
+    a.  The simulation manager retrieves the current `Hypergraph` state.
+    b.  The `matching` module finds applicable rule matches.
+    c.  The `evolution/scheduler` (or simple logic in manager) selects one match to apply.
+    d.  The `evolution/rewriter` applies the rule, modifying the `Hypergraph` (creating/deleting atoms and relations).
+    e.  A `SimulationEvent` is generated.
+    f.  The step number is incremented.
+7.  **Backend (grpc_server):** The `wolfram_engine_core` returns the new `HypergraphState` and `SimulationEvent` to the RPC handler.
+8.  **Backend (grpc_server):** The RPC handler constructs a `StepResponse` and sends it back to the Frontend.
+9.  **Frontend:** `apiClient.ts` receives the `StepResponse`.
+10. **Frontend:** The `simulationStore.ts` is updated with the new hypergraph state, events, and step number.
+11. **Frontend:** UI components (e.g., `HypergraphVisualizer.tsx`, status displays) react to store changes and re-render.
 
-### [Process Name 2]
-1. [Step 1]
-2. [Step 2]
-3. [Step 3]
+### Continuous Simulation (`RunSimulation`)
+1.  **Frontend:** User clicks "Run" button.
+2.  **Frontend:** `apiClient.ts` initiates a server-streaming `RunSimulation` RPC call.
+3.  **Backend (grpc_server):** The `RunSimulation` RPC handler starts a loop in the `wolfram_engine_core`.
+4.  **Backend (wolfram_engine_core):** In a loop (e.g., driven by a timer or as fast as possible, respecting an update interval if provided):
+    a.  Performs a simulation step (similar to 6a-6f above).
+    b.  Constructs a `SimulationStateUpdate` message.
+5.  **Backend (grpc_server):** Streams the `SimulationStateUpdate` message to the frontend. This repeats until "Stop" is requested or the stream is otherwise terminated.
+6.  **Frontend:** `apiClient.ts` receives each `SimulationStateUpdate` message from the stream.
+7.  **Frontend:** Updates `simulationStore.ts` and UI components reactively for each update.
 
 ## Error Handling Strategy
 *   **Backend:** Rust's `Result` type will be used extensively. Errors from the simulation engine will be translated into appropriate gRPC error statuses.
@@ -145,21 +165,35 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 *   **Logging:** Basic logging on the backend (e.g., using `log` and `env_logger` crates) and browser console logs on the frontend.
 
 ## Security Considerations
-* [Authentication approach]
-* [Authorization model]
-* [Data protection strategies]
-* [Other security measures]
+*   **Authentication/Authorization:** N/A for MVP. The application is designed to be run locally or in a trusted environment. No user accounts or specific access controls are implemented.
+*   **Data Protection:** Simulation data is transient and managed in memory by the backend for MVP. No sensitive data is stored persistently. Communication via gRPC is structured but not encrypted by default (gRPC-Web typically runs over HTTPS, providing transport layer security).
+*   **Input Validation:** Basic validation of gRPC request parameters (e.g., step counts) will be performed by the backend. The primary concern for MVP is stability rather than defending against malicious inputs.
+*   **Other Security Measures:** For MVP, focus is on functional correctness. Standard secure coding practices will be followed (e.g., avoiding obvious panics in Rust, proper error handling).
 
 ## Scalability Considerations
-* [Potential bottlenecks]
-* [Scaling strategies]
-* [Performance optimizations]
+*   **Current Design:** The MVP is designed for small-scale simulations (hundreds to a few thousand atoms/relations) running on a single backend instance with an in-memory hypergraph.
+*   **Potential Bottlenecks (Post-MVP):**
+    *   Sub-hypergraph isomorphism (pattern matching) can be very slow for large graphs or complex rules.
+    *   Memory usage for very large hypergraphs.
+    *   Rendering performance in the frontend for very large graphs.
+    *   Single-threaded rule application if not parallelized.
+*   **Scaling Strategies (Post-MVP):**
+    *   Optimized pattern matching algorithms.
+    *   Parallel rule application (exploiting non-conflicting updates).
+    *   Distributed simulation engine (complex).
+    *   More efficient data structures or database backend for graph storage.
+    *   Frontend visualization optimizations (e.g., WebGL, graph virtualization).
+*   **Performance Optimizations (MVP):** Focus on clean Rust code. For very small graphs as targeted by MVP, even naive algorithms should be acceptable.
 
 ## Cross-Cutting Concerns
-* [Logging approach]
-* [Configuration management]
-* [Internationalization]
-* [Accessibility]
+*   **Logging:**
+    *   **Backend:** `log` crate with `env_logger` (or similar like `tracing`) for different log levels (DEBUG, INFO, WARN, ERROR). Configurable via environment variables.
+    *   **Frontend:** Standard `console.log`, `console.warn`, `console.error`.
+*   **Configuration Management:**
+    *   **Backend:** Primarily via `Cargo.toml` for dependencies. Potential for a simple config file (e.g., TOML) for server port or default simulation parameters if needed, but mostly hardcoded for MVP.
+    *   **Frontend:** Primarily via `package.json` and `vite.config.ts`. API endpoint can be configurable.
+*   **Internationalization (i18n):** Out of scope for MVP.
+*   **Accessibility (a11y):** Basic accessibility practices for web UI (e.g., semantic HTML) will be considered, but comprehensive a11y auditing is out of scope for MVP.
 
 ## Testing Strategy
 *   **Unit Tests (Rust):** `cargo test` for `wolfram_engine_core` modules.

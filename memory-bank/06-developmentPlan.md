@@ -1,6 +1,6 @@
 # Development Plan
 
-**Last Updated:** May 13, 2025
+**Last Updated:** May 14, 2025
 
 This document outlines the strategic development plan for the Wolfram Physics Simulator MVP. It details the project phases, key deliverables, technical approaches, and risk management, reflecting a focus on robust design and iterative implementation.
 
@@ -25,8 +25,8 @@ The MVP is structured into three primary phases:
 
 *   **F1.1: Hypergraph Representation**
     *   **Atoms:** Implement as unique identifiers (e.g., UUIDs or sequential IDs) possibly associated with types or inert metadata (e.g., `Symbol["A"]`). For MVP, atoms are primarily distinct entities.
-    *   **Relations (Hyperedges):** Represent as ordered or unordered collections of Atom identifiers. The choice of ordered vs. unordered will depend on the specific interpretation of Wolfram model rules (e.g., `{{x,y}}` vs. `{{y,x}}`). For MVP, assume unordered relations unless specific rules require ordering.
-    *   **Hypergraph Data Structure:** Employ a structure that efficiently stores and allows querying of atoms and relations. This could involve `HashSet` for atoms and `Vec<Vec<AtomId>>` or `HashSet<BTreeSet<AtomId>>` (for canonical representation of unordered relations) for relations, along with indexing structures (e.g., `HashMap<AtomId, Vec<RelationId>>`) for fast lookups. The design should anticipate the need for sub-hypergraph queries.
+    *   **Relations (Hyperedges):** Represent as **ordered** collections of Atom identifiers. The order is significant for pattern matching as per the PRD (e.g., a rule matching `{{a,b}}` might not match the hyperedge `(b,a)` unless explicitly designed to or if the rule system has symmetries). For MVP, `Vec<AtomId>` is a suitable representation.
+    *   **Hypergraph Data Structure:** Employ a structure that efficiently stores and allows querying of atoms and relations. This could involve `HashSet` for atoms and `Vec<Vec<AtomId>>` for relations, along with indexing structures (e.g., `HashMap<AtomId, Vec<RelationId>>`) for fast lookups. The design should anticipate the need for sub-hypergraph queries.
     *   **Mapping to Wolfram Expressions:** Conceptualize atoms and relations as analogous to symbols and expressions in the Wolfram Language. `Hypergraph { atoms: {A, B, C}, relations: {{A,B}, {B,C}} }` could map to a set of expressions like `{Edge[A,B], Edge[B,C]}`.
 
 *   **F1.2: Rewrite Rule Definition & Storage**
@@ -67,11 +67,11 @@ The MVP is structured into three primary phases:
 **Timeline:** [To be defined - Estimated Y weeks, can overlap with Phase 1 refinement]
 **Goal:** Expose the simulation engine's capabilities via a robust and well-defined gRPC API.
 
-**Key Deliverables:** *(Largely as before, with minor clarifications)*
-*   **F2.1**: gRPC Service Definition (`WolframPhysicsSimulatorService` with RPCs: `InitializeSimulation`, `SetRules`, `StepSimulation`, `RunSimulationToEnd`, `StopSimulation`, `GetCurrentState`, `GetHypergraphSlice`) - **`InitializeSimulation` and `GetCurrentState` initial setup complete.**
-    *   Consider `SetRules` if dynamic rule loading is desired beyond hardcoded ones for MVP.
-    *   `GetHypergraphSlice` could be useful for visualizing very large graphs by fetching only a portion.
-*   **F2.2**: Protocol Buffer Message Definitions (`AtomMsg`, `RelationMsg`, `HypergraphStateMsg`, `RuleMsg`, `SimulationEventMsg`, `SimulationConfigMsg`) - **Initial setup complete with basic messages.**
+**Key Deliverables:**
+*   **F2.1**: gRPC Service Definition (`WolframPhysicsSimulatorService` with RPCs aligned with PRD: `InitializeSimulation`, `StepSimulation`, `RunSimulation` (streaming), `StopSimulation`, `GetCurrentState`).
+    *   `SetRules` (for dynamic rule loading) and `GetHypergraphSlice` (for partial graph fetching) are considered post-MVP features.
+    *   The PRD's streaming `RunSimulation` RPC will be the primary method for continuous evolution. Client-side logic can manage running this stream until a desired condition (e.g., fixed point, step limit) is met if a "run to end" behavior is needed without a dedicated non-streaming RPC.
+*   **F2.2**: Protocol Buffer Message Definitions (Aligned with PRD: `Atom`, `Relation`, `HypergraphState`, `SimulationEvent`, `SimulationStateUpdate`, plus request/response messages for each RPC) - **Initial setup complete with basic messages.**
     *   Ensure messages are well-structured for efficiency and clarity.
 *   **F2.3**: Integration of gRPC service with the Rust simulation engine.
     *   The gRPC server methods will call directly into the Rust simulation engine's public API.

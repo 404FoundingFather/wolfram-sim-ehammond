@@ -1,6 +1,6 @@
 # Project Progress (Kanban Board)
 
-**Last Updated:** May 13, 2025
+**Last Updated:** May 14, 2025
 
 This document tracks the current status of development tasks using a Kanban-style board. Items are moved based on the Development Plan (`06-developmentPlan.md`).
 
@@ -25,22 +25,24 @@ This document tracks the current status of development tasks using a Kanban-styl
     -   Task: Implement save-to-file and load-from-file functionality for simulation state. - [Owner TBD]
 
 ### Phase 2: gRPC Service Implementation
--   **F2.1**: Refine gRPC Service Definition (`WolframPhysicsSimulatorService` with all RPCs like `SetRules`, `RunSimulationToEnd`, `GetHypergraphSlice`) - [Owner TBD]
--   **F2.2**: Refine Protocol Buffer Message Definitions (`AtomMsg`, `RelationMsg`, `HypergraphStateMsg`, `RuleMsg`, `SimulationEventMsg`, `SimulationConfigMsg`) - [Owner TBD]
--   **F2.3**: Full Integration of gRPC service with the Rust simulation engine (expose all F1.x features) - [Owner TBD]
+-   **F2.1**: Implement gRPC Service Definition (`WolframPhysicsSimulatorService` with PRD RPCs: `InitializeSimulation`, `StepSimulation`, `RunSimulation` (streaming), `StopSimulation`, `GetCurrentState`) - [Owner TBD]
     -   Task: Implement gRPC handler for `InitializeSimulation`. - [Owner TBD]
-    -   Task: Implement gRPC handler for `SetRules`. - [Owner TBD]
     -   Task: Implement gRPC handler for `StepSimulation`. - [Owner TBD]
-    -   Task: Implement gRPC handler for `RunSimulationToEnd`. - [Owner TBD]
+    -   Task: Implement gRPC handler for `RunSimulation` (streaming). - [Owner TBD]
     -   Task: Implement gRPC handler for `StopSimulation`. - [Owner TBD]
     -   Task: Implement gRPC handler for `GetCurrentState`. - [Owner TBD]
-    -   Task: Implement gRPC handler for `GetHypergraphSlice`. - [Owner TBD]
-    -   Task: Design and implement simulation state management (e.g., per-client/session if needed beyond single global instance). - [Owner TBD]
+-   **F2.2**: Ensure Protocol Buffer Message Definitions are finalized and match usage (PRD messages: `Atom`, `Relation`, `HypergraphState`, `SimulationEvent`, `SimulationStateUpdate`, plus relevant request/response messages) - [Owner TBD]
+-   **F2.3**: Full Integration of gRPC service with the Rust simulation engine (expose all F1.x features through the defined MVP RPCs) - [Owner TBD]
+    -   Task: Design and implement simulation state management (e.g., single global instance for MVP, potential for per-client/session if time allows and is deemed critical for MVP stability with multiple frontend interactions, though PRD implies single active simulation focus). - [Owner TBD]
+
+#### Post-MVP gRPC Considerations (Examples)
+-   Task: Design & Implement `SetRules` RPC for dynamic rule loading. - [Owner TBD, Post-MVP]
+-   Task: Design & Implement `GetHypergraphSlice` RPC for fetching partial graph data. - [Owner TBD, Post-MVP]
 
 ### Phase 3: Web Frontend Development
 -   **F3.2**: UI Controls
     -   Task: Implement UI for Initialize simulation (predefined/simple editor). - [Owner TBD]
-    -   Task: Implement UI for Rule definitions input (if F2.1 `SetRules` is done). - [Owner TBD]
+    -   Task: Implement UI for Rule definitions input (Post-MVP, if F2.1 `SetRules` is implemented). - [Owner TBD]
     -   Task: Implement UI Buttons: Step, Run, Stop, Reset. - [Owner TBD]
 -   **F3.3**: Hypergraph Visualization
     -   Task: Evaluate and select a 2D graph visualization library. - [Owner TBD]

@@ -1,5 +1,7 @@
 # 12. Key Decisions from PRD
 
+**Last Updated:** May 14, 2025
+
 This document outlines key architectural and scope decisions made for the Wolfram Physics Simulator MVP, as derived from the PRD.
 
 ## 1. Core Technologies

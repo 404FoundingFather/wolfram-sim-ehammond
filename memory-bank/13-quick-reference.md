@@ -1,5 +1,7 @@
 # 13. Quick Reference Guide from PRD
 
+**Last Updated:** May 14, 2025
+
 This guide provides a quick lookup for key terms, features, and identifiers from the Wolfram Physics Simulator MVP PRD.
 
 ## Core Components & Technologies

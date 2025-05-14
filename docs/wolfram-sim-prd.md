@@ -27,7 +27,7 @@ The MVP will focus on delivering a core, usable simulation experience.
 - **F1.1: Hypergraph Representation**:
   - Implement a basic hypergraph data structure. For MVP, this will consist of:
     - A collection of unique "atoms" (nodes).
-    - A collection of "relations" (hyperedges), where each relation is an ordered list of atoms. (For MVP, we can start with binary and ternary relations primarily).
+    - A collection of "relations" (hyperedges), where each relation is an ordered list of atoms. (For MVP, we can start with binary and ternary relations primarily. The order implies a specific sequence for pattern matching; e.g., a rule matching `{{a,b}}` might not match the hyperedge `(b,a)` unless explicitly designed to do so or if the rule system has symmetries. For the MVP, we will assume order is significant.)
 
 - **F1.2: Rewrite Rule Definition & Storage**:
   - Allow for one (or a very small set of 2-3) hardcoded/predefined rewrite rule(s) within the Rust engine.
@@ -42,7 +42,7 @@ The MVP will focus on delivering a core, usable simulation experience.
 
 - **F1.5: Simulation Loop**:
   - Provide a mechanism to evolve the hypergraph:
-    - Step-by-step: Apply one valid rule update (or a maximal set of non-conflicting updates, for MVP, one update per "step" is acceptable).
+    - Step-by-step: Apply one valid rule update. For MVP, if multiple rule applications are possible at a given step, one will be chosen (e.g., the first one found by the matching algorithm, or a random one if multiple are found simultaneously. For MVP, the first match found is acceptable; future versions might explore deterministic random choice or other strategies).
     - Continuous run: Repeatedly apply updates.
   - Manage a "current state" of the hypergraph.
 

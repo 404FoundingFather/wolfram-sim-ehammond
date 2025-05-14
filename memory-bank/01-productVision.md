@@ -1,6 +1,6 @@
 # Product Vision
 
-**Last Updated:** May 17, 2025
+**Last Updated:** May 14, 2025
 
 This document serves as the source of truth for the product we are building, defining the problem space, solution approach, and user experience goals.
 

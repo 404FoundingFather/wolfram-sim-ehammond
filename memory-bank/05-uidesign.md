@@ -1,6 +1,6 @@
 # UI Design
 
-**Last Updated:** May 13, 2025
+**Last Updated:** May 14, 2025
 
 This document outlines the user interface design principles, components, and layouts for the Wolfram Physics Simulator MVP.
 
@@ -26,6 +26,7 @@ This document outlines the user interface design principles, components, and lay
 ### Input Components
 - **Button:** Standard buttons for "Initialize Simulation", "Step", "Run", "Stop", "Reset".
   - States: Default, Hover, Active, Disabled.
+  - **Initial State:** "Initialize Simulation" enabled. "Step", "Run", "Stop", "Reset" initially disabled until a simulation is successfully initialized.
 - **Select Dropdown / Simple Editor (for Initialization - F3.2):**
   - To choose a predefined initial hypergraph state OR potentially a very simple text-based input/editor for defining a small initial hypergraph (MVP focus on predefined).
   - To choose a predefined rewrite rule (from the hardcoded set).
@@ -92,7 +93,7 @@ This document outlines the user interface design principles, components, and lay
 6.  **User clicks** "Stop" button.
     - System: Backend stops continuous simulation. Visualization remains at the last state.
 7.  **User clicks** "Reset" button.
-    - System: Frontend and Backend return to a clean, pre-initialization state, or to the last initialized state. (Exact behavior TBD).
+    - System: Frontend clears the current visualization and status displays (step, atom/relation counts, messages). Backend is requested to reset its internal state to be ready for a new initialization (or simply the frontend stops interacting with the old simulation instance if the backend is stateless between distinct `InitializeSimulation` calls). The selected initial state and rule in the UI dropdowns remain unchanged. Simulation control buttons ("Step", "Run", "Stop") become disabled. "Initialize Simulation" button remains/becomes enabled.
 
 ### Error Flow (Example: Backend Connection Lost)
 1.  User attempts an action (e.g., "Step").
