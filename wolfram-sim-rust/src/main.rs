@@ -1,20 +1,16 @@
 use tonic::{transport::Server, Request, Response, Status};
+use tokio_stream::wrappers::ReceiverStream;
 
-// This includes the generated code from wolfram_physics.proto
-// The name 'wolfram_physics_simulator' comes from the package name in the .proto file
-pub mod wolfram_physics_simulator {
-    tonic::include_proto!("wolfram_physics_simulator");
-}
-
-// Import the generated server trait and message types
-// The server trait is typically within a module named after the service (e.g., wolfram_physics_simulator_service_server)
-use wolfram_physics_simulator::{
+// Use our crate's module structure
+use wolfram_sim_rust::wolfram_physics_simulator::{
     wolfram_physics_simulator_service_server::{WolframPhysicsSimulatorService, WolframPhysicsSimulatorServiceServer},
-    Atom, HypergraphState, InitializeRequest, InitializeResponse, Relation, RunRequest,
+    Atom as ProtoAtom, HypergraphState, InitializeRequest, InitializeResponse, Relation, RunRequest,
     SimulationEvent, SimulationStateUpdate, StepRequest, StepResponse, StopRequest, StopResponse,
     GetCurrentStateRequest,
 };
-use tokio_stream::wrappers::ReceiverStream; // Added import for ReceiverStream
+
+// Import our core data structures
+use wolfram_sim_rust::hypergraph::{Atom, AtomId};
 
 // Define a struct that will implement our service
 #[derive(Debug, Default)]
@@ -62,15 +58,6 @@ impl WolframPhysicsSimulatorService for MyWolframPhysicsSimulator {
         let (tx, rx) = tokio::sync::mpsc::channel(4); // Buffer of 4
         // In a real implementation, you would spawn a task to send updates to tx
         // For now, we'll just return an empty stream that closes immediately.
-        // Example: Sending one immediate update then closing
-        // tokio::spawn(async move {
-        //     let state_update = SimulationStateUpdate {
-        //         current_graph: Some(HypergraphState::default()),
-        //         recent_events: vec![],
-        //         step_number: 0,
-        //     };
-        //     tx.send(Ok(state_update)).await.unwrap();
-        // });
         Ok(Response::new(ReceiverStream::new(rx)))
     }
 
@@ -104,6 +91,11 @@ impl WolframPhysicsSimulatorService for MyWolframPhysicsSimulator {
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Test our Atom implementation
+    let atom_id = AtomId::new(1);
+    let atom = Atom::new(atom_id);
+    println!("Created test atom: {:?} with ID: {}", atom, atom.id());
+
     let addr = "[::1]:50051".parse()?;
     let simulator_service = MyWolframPhysicsSimulator::default();
 

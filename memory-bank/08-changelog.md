@@ -1,12 +1,19 @@
 # Changelog
 
-**Last Updated:** May 14, 2025
+**Last Updated:** May 15, 2025
 
 This document tracks significant changes to the project in chronological order, with the most recent entries at the top.
 
 ## [Unreleased] - MVP Development
 
 ### Added
+- **Sprint 1: Core Hypergraph Implementation (2025-05-15):**
+    - Implemented `AtomId` type as a newtype pattern around `u64` with serialization support
+    - Implemented `Atom` struct with ID and optional metadata
+    - Added comprehensive unit tests for the new types
+    - Set up project structure for the core library with modular organization
+    - Added Serde for serialization/deserialization support
+    
 - Initial Project Setup:
     - Product Requirements Document (PRD) for MVP (`docs/wolfram-sim-prd.md`).
     - Memory Bank structure established (`memory-bank/`).
@@ -119,6 +126,11 @@ This document tracks significant changes to the project in chronological order, 
 - [Removed functionality]
 
 ## Project Milestones
+
+### Sprint 1 Start: Core Hypergraph Implementation - 2025-05-15
+- Started implementation of core Rust data structures for the simulation engine
+- Completed the `AtomId` and `Atom` implementations with serialization support
+- Set up the project structure for future development
 
 ### MVP Scope Update: Hypergraph Save/Load - 2025-05-14
 - Added functionality to save and load hypergraph states to/from files, including predefined examples.

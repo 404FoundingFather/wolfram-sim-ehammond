@@ -1,6 +1,6 @@
 # Project Progress (Kanban Board)
 
-**Last Updated:** May 14, 2025
+**Last Updated:** May 15, 2025
 
 This document tracks the current status of development tasks using a Kanban-style board. Items are moved based on the Development Plan (`06-developmentPlan.md`).
 
@@ -70,7 +70,6 @@ This document tracks the current status of development tasks using a Kanban-styl
 ## To Do (Sprint 1: Core Hypergraph & Rule Representation - F1.1, F1.2)
 **Goal:** Implement stable data structures for atoms, relations, hypergraphs, and rule definitions in Rust.
 
--   Task: Define and implement `AtomId` type and `Atom` struct/metadata (F1.1) - [Owner TBD]
 -   Task: Design and implement `Relation` (hyperedge) representation (e.g., `Vec<AtomId>`) (F1.1) - [Owner TBD]
 -   Task: Implement core `Hypergraph` struct with methods for add/remove, basic queries (F1.1) - [Owner TBD]
 -   Task: Define `Rule` struct (pattern hypergraph, replacement hypergraph) (F1.2) - [Owner TBD]
@@ -117,6 +116,12 @@ This document tracks the current status of development tasks using a Kanban-styl
 --- 
 
 ## Done
+
+**Sprint 1: Core Hypergraph & Rule Representation Tasks (F1.1, F1.2)**
+-   Task: Define and implement `AtomId` type and `Atom` struct/metadata (F1.1) - [Completed May 15, 2025]
+    - Implemented `AtomId` as a newtype wrapper around `u64` with serialization support
+    - Implemented `Atom` struct with ID and optional metadata
+    - Added comprehensive unit tests for all functionality
 
 **Sprint 0: Foundational Setup (Completed May 13, 2025)**
 -   Rust project (`Cargo.toml`), Tonic for gRPC. [Done]

@@ -1,6 +1,6 @@
 # Code Snippets
 
-**Last Updated:** May 14, 2025
+**Last Updated:** May 15, 2025
 
 This document collects reusable code patterns, examples, and solutions to common problems encountered in the project. All code snippets adhere to Clean Code principles.
 
@@ -18,6 +18,129 @@ All code snippets in this document must exemplify Clean Code principles:
 8. **DRY (Don't Repeat Yourself)**: Avoid duplication in code patterns
 
 When adding new snippets, ensure they adhere to these principles and can serve as exemplars for the project's coding standards.
+
+## Implemented Patterns
+
+### Newtype Pattern (for AtomId)
+
+**Use Case:** When you want to create a distinct, type-safe wrapper around a primitive type to prevent accidental misuse and provide domain-specific methods.
+
+```rust
+use std::fmt;
+use serde::{Serialize, Deserialize};
+
+/// Represents a unique identifier for an atom in a hypergraph.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct AtomId(pub u64);
+
+impl AtomId {
+    /// Creates a new AtomId with the specified ID value.
+    pub fn new(id: u64) -> Self {
+        AtomId(id)
+    }
+
+    /// Returns the inner value of the AtomId.
+    pub fn value(&self) -> u64 {
+        self.0
+    }
+}
+
+impl fmt::Display for AtomId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Atom({})", self.0)
+    }
+}
+```
+
+**Explanation:**
+- This pattern wraps a primitive `u64` in a new type to create a distinct, type-safe identifier
+- Implements core traits like `Debug`, `Clone`, `PartialEq`, etc.
+- Includes serialization support through Serde
+- Provides a clean API for creation and accessing the inner value
+
+**Usage Example:**
+```rust
+// Create a new atom ID
+let id = AtomId::new(42);
+
+// Get the underlying value
+assert_eq!(id.value(), 42);
+
+// Display formatting
+let id_string = format!("{}", id); // Results in "Atom(42)"
+```
+
+### Entity with Optional Metadata
+
+**Use Case:** When you need to represent an entity with a unique identifier and optional additional information.
+
+```rust
+/// Represents an atom in a hypergraph with its unique ID and optional metadata.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Atom {
+    /// The unique identifier for this atom
+    pub id: AtomId,
+    
+    /// Optional metadata or additional information about the atom
+    pub metadata: Option<String>,
+}
+
+impl Atom {
+    /// Creates a new Atom with the specified ID and no metadata.
+    pub fn new(id: AtomId) -> Self {
+        Atom {
+            id,
+            metadata: None,
+        }
+    }
+
+    /// Creates a new Atom with the specified ID and metadata.
+    pub fn with_metadata(id: AtomId, metadata: String) -> Self {
+        Atom {
+            id,
+            metadata: Some(metadata),
+        }
+    }
+
+    /// Returns the ID of this atom.
+    pub fn id(&self) -> AtomId {
+        self.id
+    }
+
+    /// Returns a reference to the metadata of this atom, if any.
+    pub fn metadata(&self) -> Option<&str> {
+        self.metadata.as_deref()
+    }
+
+    /// Sets the metadata for this atom.
+    pub fn set_metadata(&mut self, metadata: Option<String>) {
+        self.metadata = metadata;
+    }
+}
+```
+
+**Explanation:**
+- Uses the `Option` type to represent the presence or absence of metadata
+- Provides constructor methods for both with and without metadata cases
+- Includes getters that return appropriate reference types
+- Uses `as_deref()` to convert `Option<String>` to `Option<&str>` for convenience and efficiency
+
+**Usage Example:**
+```rust
+// Create an atom without metadata
+let atom_id = AtomId::new(1);
+let atom = Atom::new(atom_id);
+
+// Create an atom with metadata
+let atom_id2 = AtomId::new(2);
+let atom_with_metadata = Atom::with_metadata(atom_id2, "Symbol[\"A\"]".to_string());
+
+// Access metadata
+match atom_with_metadata.metadata() {
+    Some(data) => println!("Atom has metadata: {}", data),
+    None => println!("Atom has no metadata"),
+}
+```
 
 ## Common Patterns
 
@@ -130,17 +253,58 @@ When adding new snippets, ensure they adhere to these principles and can serve a
 
 ## Testing Examples
 
-### [Test Scenario]
+### Unit Testing for AtomId and Atom
 
-**What to Test:** [Description of what's being tested]
+**What to Test:** Basic functionality and properties of the `AtomId` and `Atom` types
 
-```[language]
-[test code]
+```rust
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_atom_id_creation() {
+        let id = AtomId::new(42);
+        assert_eq!(id.value(), 42);
+    }
+
+    #[test]
+    fn test_atom_creation() {
+        let atom_id = AtomId::new(1);
+        let atom = Atom::new(atom_id);
+        assert_eq!(atom.id(), atom_id);
+        assert_eq!(atom.metadata(), None);
+    }
+
+    #[test]
+    fn test_atom_with_metadata() {
+        let atom_id = AtomId::new(2);
+        let metadata = "Symbol[\"A\"]".to_string();
+        let atom = Atom::with_metadata(atom_id, metadata.clone());
+        assert_eq!(atom.id(), atom_id);
+        assert_eq!(atom.metadata(), Some(metadata.as_str()));
+    }
+
+    #[test]
+    fn test_set_metadata() {
+        let atom_id = AtomId::new(3);
+        let mut atom = Atom::new(atom_id);
+        assert_eq!(atom.metadata(), None);
+        
+        atom.set_metadata(Some("Symbol[\"B\"]".to_string()));
+        assert_eq!(atom.metadata(), Some("Symbol[\"B\"]"));
+        
+        atom.set_metadata(None);
+        assert_eq!(atom.metadata(), None);
+    }
+}
 ```
 
 **Key Points:**
-- [Important aspect of the test]
-- [Important aspect of the test]
+- Tests cover creation with various parameters
+- Tests verify property access methods
+- Tests check state mutation (set_metadata)
+- Tests verify both presence and absence of optional metadata
 
 ## Integration Examples
 
