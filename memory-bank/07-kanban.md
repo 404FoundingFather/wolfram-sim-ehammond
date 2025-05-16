@@ -1,6 +1,6 @@
 # Project Progress (Kanban Board)
 
-**Last Updated:** May 15, 2025
+**Last Updated:** May 16, 2025
 
 This document tracks the current status of development tasks using a Kanban-style board. Items are moved based on the Development Plan (`06-developmentPlan.md`).
 
@@ -70,7 +70,6 @@ This document tracks the current status of development tasks using a Kanban-styl
 ## To Do (Sprint 1: Core Hypergraph & Rule Representation - F1.1, F1.2)
 **Goal:** Implement stable data structures for atoms, relations, hypergraphs, and rule definitions in Rust.
 
--   Task: Implement core `Hypergraph` struct with methods for add/remove, basic queries (F1.1) - [Owner TBD]
 -   Task: Define `Rule` struct (pattern hypergraph, replacement hypergraph) (F1.2) - [Owner TBD]
 -   Task: Implement storage for a set of hardcoded rules (e.g., `{{x,y}} -> {{x,z},{z,y}}`) (F1.2) - [Owner TBD]
 -   Task: Unit tests for all data structures and basic operations (F1.1, F1.2) - [Owner TBD]
@@ -117,6 +116,13 @@ This document tracks the current status of development tasks using a Kanban-styl
 ## Done
 
 **Sprint 1: Core Hypergraph & Rule Representation Tasks (F1.1, F1.2)**
+-   Task: Implement core `Hypergraph` struct with methods for add/remove, basic queries (F1.1) - [Completed May 16, 2025]
+    - Implemented `Hypergraph` struct with core data storage using HashMaps for atoms and relations
+    - Added indexed lookup from atoms to relations for efficient querying
+    - Implemented methods for adding/removing atoms and relations, with proper cross-reference management
+    - Added query methods like find_relations_with_atom, atom_count, relation_count, etc.
+    - Added ID generation for atoms and relations
+    - Added comprehensive unit tests for all functionality
 -   Task: Design and implement `Relation` (hyperedge) representation (e.g., `Vec<AtomId>`) (F1.1) - [Completed May 15, 2025]
     - Implemented `RelationId` as a newtype wrapper around `u64` with serialization support
     - Implemented `Relation` struct with ID, ordered collection of AtomIds, and optional metadata

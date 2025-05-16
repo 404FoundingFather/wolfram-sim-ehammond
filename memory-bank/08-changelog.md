@@ -1,12 +1,20 @@
 # Changelog
 
-**Last Updated:** May 15, 2025
+**Last Updated:** May 16, 2025
 
 This document tracks significant changes to the project in chronological order, with the most recent entries at the top.
 
 ## [Unreleased] - MVP Development
 
 ### Added
+- **Sprint 1: Core Hypergraph Implementation (2025-05-16):**
+    - Implemented `Hypergraph` struct with efficient data structures for atoms and relations
+    - Created indexed lookup from atoms to relations for improved query performance
+    - Added methods for adding/removing atoms and relations with proper cross-reference maintenance
+    - Added query methods (atom_count, relation_count, find_relations_with_atom, etc.)
+    - Implemented ID generation for both atoms and relations
+    - Added comprehensive unit tests for all `Hypergraph` functionality
+
 - **Sprint 1: Core Hypergraph Implementation (2025-05-15):**
     - Implemented `RelationId` type as a newtype pattern around `u64` with serialization support
     - Implemented `Relation` struct with ID, ordered collection of AtomIds, and optional metadata
@@ -129,6 +137,12 @@ This document tracks significant changes to the project in chronological order, 
 - [Removed functionality]
 
 ## Project Milestones
+
+### Sprint 1 Continued: Core Hypergraph Implementation - 2025-05-16
+- Completed the `Hypergraph` implementation with efficient data structures and comprehensive API
+- Implemented relation indexing for optimized queries
+- All unit tests are passing for the core hypergraph data structures
+- 3 out of 4 Sprint 1 tasks now completed
 
 ### Sprint 1 Start: Core Hypergraph Implementation - 2025-05-15
 - Started implementation of core Rust data structures for the simulation engine
