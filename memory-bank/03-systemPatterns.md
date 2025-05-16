@@ -1,6 +1,6 @@
 # System Patterns
 
-**Last Updated:** May 14, 2025
+**Last Updated:** May 15, 2025
 
 This document describes the architecture, design patterns, and code organization principles used in the Wolfram Physics Simulator MVP.
 
@@ -29,25 +29,25 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 *   **Hypergraph Representation:**
     *   **Purpose:** To efficiently store and manipulate the hypergraph, representing atoms and relations (hyperedges).
     *   **Implementation:** Custom Rust structs for `AtomId`, `Atom` metadata, `Relation` (e.g., `Vec<AtomId>`), and the main `Hypergraph` container. Data structures will be chosen for efficient querying and modification (e.g., `HashSet`, `Vec`, `HashMap`).
-    *   **Key Classes/Components:** Defined within a core library (e.g., `wolfram_engine_core`) in modules like:
-        *   `hypergraph::atom.rs`, `hypergraph::relation.rs`, `hypergraph::hypergraph.rs`
+    *   **Key Classes/Components:** Defined within the `wolfram-sim-rust` codebase in modules like:
+        *   `hypergraph/atom.rs`, `hypergraph/relation.rs`, `hypergraph/hypergraph.rs` (to be implemented)
 *   **Rule Engine:**
     *   **Purpose:** To define, store, match, and apply rewrite rules.
     *   **Implementation:** Structs for `Rule` (pattern and replacement hypergraphs), variable representation. Pattern matching will involve sub-hypergraph isomorphism algorithms. Rewriting logic will modify the main hypergraph based on matched rules.
-    *   **Key Classes/Components:** Modules within `wolfram_engine_core`:
-        *   `rules::rule.rs`, `rules::pattern.rs`
-        *   `matching::isomorphism.rs` (or similar for pattern matching logic)
-        *   `evolution::rewriter.rs` (for applying rewrites)
+    *   **Key Classes/Components:** Modules to be implemented within `wolfram-sim-rust`:
+        *   `rules/rule.rs`, `rules/pattern.rs` (to be implemented)
+        *   `matching/isomorphism.rs` (or similar for pattern matching logic, to be implemented)
+        *   `evolution/rewriter.rs` (for applying rewrites, to be implemented)
 *   **Stateful Simulation Loop & Event Management:**
     *   **Purpose:** To manage the evolution of the hypergraph over discrete steps or continuous updates, including event selection.
     *   **Implementation:** The engine maintains a "current state" of the hypergraph. Rule application modifies this state. Event selection logic (e.g., deterministic for MVP) chooses which match to apply.
-    *   **Key Classes/Components:** Modules within `wolfram_engine_core`:
-        *   `simulation::mod.rs` or `simulation::manager.rs` (main simulation loop)
-        *   `evolution::scheduler.rs` (for event selection if complex)
+    *   **Key Classes/Components:** Modules to be implemented within `wolfram-sim-rust`:
+        *   `simulation/mod.rs` or `simulation/manager.rs` (main simulation loop, to be implemented)
+        *   `evolution/scheduler.rs` (for event selection if complex, to be implemented)
 *   **State Serialization:**
     *   **Purpose:** Primarily for **F1.7 Hypergraph Persistence**: to save the current `HypergraphState` to a file (e.g., JSON) and load a `HypergraphState` from a file. This allows users to persist and resume simulations or work with predefined examples. Also supports **F1.6 Event Management & State Transmission** by ensuring the hypergraph state can be structured for gRPC messages, though the direct serialization for gRPC is handled by Protobuf mechanisms.
     *   **Implementation:** Using `serde` for serialization/deserialization to/from file formats like JSON (for MVP).
-    *   **Key Classes/Components:** Module within `wolfram_engine_core` (e.g., `serialization::mod.rs`) will contain logic for file I/O and `serde` integration for F1.7.
+    *   **Key Classes/Components:** Module to be implemented within `wolfram-sim-rust` (e.g., `serialization/mod.rs`) will contain logic for file I/O and `serde` integration for F1.7.
 *   **In-Memory State Management (MVP):**
     *   **Purpose:** To hold the current simulation state.
     *   **Implementation:** The entire hypergraph is stored in RAM within the Rust process. No database is used for MVP.
@@ -81,50 +81,46 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 
 ## Code Organization
 
-### Tentative Directory Structure (Conceptual)
+### Current Directory Structure
 ```
-[Project Root: /Users/ehammond/Documents/src/wolfram-sim]
-├── backend/
-│   ├── wolfram_engine_core/  // Core simulation library crate
-│   │   ├── src/
-│   │   │   ├── lib.rs
-│   │   │   ├── hypergraph/ (atom.rs, relation.rs, hypergraph.rs)
-│   │   │   ├── rules/      (rule.rs, pattern.rs)
-│   │   │   ├── matching/   (isomorphism.rs)
-│   │   │   ├── evolution/  (rewriter.rs, scheduler.rs)
-│   │   │   ├── simulation/ (mod.rs or manager.rs)
-│   │   │   └── serialization/ (mod.rs)
-│   │   └── Cargo.toml
-│   ├── grpc_server/          // gRPC server binary crate
-│   │   ├── src/
-│   │   │   ├── main.rs       // Entry point, gRPC server setup
-│   │   │   └── server.rs     // gRPC service implementation
-│   │   └── Cargo.toml
-│   └── proto/                // Copied/linked .proto for build
-├── frontend/
+[Project Root: /Users/ehammond/Documents/src/wolfram-sim-ehammond]
+├── wolfram-sim-rust/       // Rust backend codebase
 │   ├── src/
-│   │   ├── App.tsx         // Main application component
-│   │   ├── components/
-│   │   │   ├── SimulationControls.tsx
-│   │   │   └── HypergraphVisualizer.tsx
-│   │   ├── apiClient.ts    // gRPC-Web client setup
-│   │   ├── store/          // State management (e.g., simulationStore.ts)
-│   │   └── generated/      // gRPC-Web generated client code from .proto
-│   ├── package.json
-│   └── public/
-├── proto/                  // Master .proto definition files
-│   └── wolfram_physics.proto
-├── docs/
-│   └── wolfram-sim-prd.md
-└── memory-bank/
-    └── ... (all memory bank files)
+│   │   ├── lib.rs         // Library exports
+│   │   ├── main.rs        // Entry point, gRPC server setup
+│   │   └── hypergraph/    // Hypergraph data structures
+│   │       ├── mod.rs     // Module definitions
+│   │       ├── atom.rs    // Atom and AtomId implementations
+│   │       └── relation.rs // Relation and RelationId implementations
+│   ├── Cargo.toml         // Rust dependencies
+│   └── Cargo.lock         // Locked dependencies
+├── wolfram-sim-frontend/   // React TypeScript frontend
+│   ├── src/
+│   │   ├── App.tsx        // Main application component
+│   │   ├── App.css        // Main application styles
+│   │   ├── main.tsx       // Frontend entry point
+│   │   ├── index.css      // Global styles
+│   │   ├── assets/        // Static assets
+│   │   └── generated/     // gRPC-Web generated client code
+│   ├── public/            // Public static files
+│   ├── package.json       // Frontend dependencies
+│   ├── vite.config.ts     // Vite configuration
+│   └── tsconfig.json      // TypeScript configuration
+├── proto/                 // Protocol Buffer definitions
+│   └── wolfram_physics.proto // gRPC service and message definitions
+├── docs/                  // Project documentation
+├── memory-bank/           // Persistent memory between AI sessions
+│   └── ... (all memory bank files)
+├── .gitignore             // Git ignore rules
+└── README.md              // Project README
 ```
 
 ### Module Responsibilities
-*   **`backend/wolfram_engine_core`**: Contains all core Rust simulation engine logic (data structures, rules, matching, evolution, simulation loop).
-    *   The `serialization` submodule specifically handles file-based saving and loading of `HypergraphState` objects using `serde` (for F1.7).
-*   **`backend/grpc_server`**: Implements the gRPC service, acting as a bridge to the `wolfram_engine_core` library.
-*   **`frontend/src`**: Contains all TypeScript SPA frontend code, including UI components, API client, and state management.
+*   **`wolfram-sim-rust`**: Contains all Rust backend code including simulation engine logic and gRPC service.
+    *   `src/hypergraph/`: Core data structures for the simulation (atoms, relations).
+    *   `src/lib.rs`: Exposes the library functionality.
+    *   `src/main.rs`: Entry point and gRPC server implementation.
+*   **`wolfram-sim-frontend/src`**: Contains all TypeScript SPA frontend code, including React components and gRPC-Web client.
 *   **`proto` (top-level)**: Canonical location for Protocol Buffer definitions.
 
 ## Data Flow
@@ -133,63 +129,63 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 1.  **Frontend:** User clicks "Step" button.
 2.  **Frontend:** `SimulationControls.tsx` calls a function in `apiClient.ts` (which uses the gRPC-Web client).
 3.  **Frontend:** `apiClient.ts` sends a `StepRequest` (e.g., for 1 step) to the Backend gRPC `StepSimulation` RPC.
-4.  **Backend (grpc_server):** The `StepSimulation` RPC handler in `server.rs` receives the request.
-5.  **Backend (grpc_server):** The handler calls the appropriate method in `wolfram_engine_core` (e.g., `simulation_manager.step(1)`).
-6.  **Backend (wolfram_engine_core):**
+4.  **Backend (wolfram-sim-rust):** The `StepSimulation` RPC handler in `main.rs` receives the request.
+5.  **Backend (wolfram-sim-rust):** The handler calls the appropriate method in the simulation engine (e.g., `simulation_manager.step(1)`).
+6.  **Backend (wolfram-sim-rust):**
     a.  The simulation manager retrieves the current `Hypergraph` state.
-    b.  The `matching` module finds applicable rule matches.
-    c.  The `evolution/scheduler` (or simple logic in manager) selects one match to apply.
-    d.  The `evolution/rewriter` applies the rule, modifying the `Hypergraph` (creating/deleting atoms and relations).
+    b.  The matching logic finds applicable rule matches.
+    c.  Event selection logic (or simple logic in manager) selects one match to apply.
+    d.  The rewriter applies the rule, modifying the `Hypergraph` (creating/deleting atoms and relations).
     e.  A `SimulationEvent` is generated.
     f.  The step number is incremented.
-7.  **Backend (grpc_server):** The `wolfram_engine_core` returns the new `HypergraphState` and `SimulationEvent` to the RPC handler.
-8.  **Backend (grpc_server):** The RPC handler constructs a `StepResponse` and sends it back to the Frontend.
+7.  **Backend (wolfram-sim-rust):** The simulation engine returns the new `HypergraphState` and `SimulationEvent` to the RPC handler.
+8.  **Backend (wolfram-sim-rust):** The RPC handler constructs a `StepResponse` and sends it back to the Frontend.
 9.  **Frontend:** `apiClient.ts` receives the `StepResponse`.
-10. **Frontend:** The `simulationStore.ts` is updated with the new hypergraph state, events, and step number.
-11. **Frontend:** UI components (e.g., `HypergraphVisualizer.tsx`, status displays) react to store changes and re-render.
+10. **Frontend:** The state management store is updated with the new hypergraph state, events, and step number.
+11. **Frontend:** UI components (e.g., visualization, status displays) react to store changes and re-render.
 
 ### Continuous Simulation (`RunSimulation`)
 1.  **Frontend:** User clicks "Run" button.
 2.  **Frontend:** `apiClient.ts` initiates a server-streaming `RunSimulation` RPC call.
-3.  **Backend (grpc_server):** The `RunSimulation` RPC handler starts a loop in the `wolfram_engine_core`.
-4.  **Backend (wolfram_engine_core):** In a loop (e.g., driven by a timer or as fast as possible, respecting an update interval if provided):
+3.  **Backend (wolfram-sim-rust):** The `RunSimulation` RPC handler starts a simulation loop.
+4.  **Backend (wolfram-sim-rust):** In a loop (e.g., driven by a timer or as fast as possible, respecting an update interval if provided):
     a.  Performs a simulation step (similar to 6a-6f above).
     b.  Constructs a `SimulationStateUpdate` message.
-5.  **Backend (grpc_server):** Streams the `SimulationStateUpdate` message to the frontend. This repeats until "Stop" is requested or the stream is otherwise terminated.
+5.  **Backend (wolfram-sim-rust):** Streams the `SimulationStateUpdate` message to the frontend. This repeats until "Stop" is requested or the stream is otherwise terminated.
 6.  **Frontend:** `apiClient.ts` receives each `SimulationStateUpdate` message from the stream.
-7.  **Frontend:** Updates `simulationStore.ts` and UI components reactively for each update.
+7.  **Frontend:** Updates the state store and UI components reactively for each update.
 
 ### Save Hypergraph Execution (NEW)
 1.  **Frontend:** User clicks "Save Hypergraph" button.
-2.  **Frontend:** `SimulationControls.tsx` (or similar) may prompt for a filename (or use a default) and then calls a function in `apiClient.ts`.
+2.  **Frontend:** UI component may prompt for a filename (or use a default) and then calls a function in `apiClient.ts`.
 3.  **Frontend:** `apiClient.ts` sends a `SaveHypergraphRequest` (possibly with the suggested filename) to the Backend gRPC `SaveHypergraph` RPC.
-4.  **Backend (grpc_server):** The `SaveHypergraph` RPC handler in `server.rs` receives the request.
-5.  **Backend (grpc_server):** The handler calls the appropriate method in `wolfram_engine_core` (e.g., `simulation_manager.save_current_hypergraph(filename_suggestion)`).
-6.  **Backend (wolfram_engine_core):**
+4.  **Backend (wolfram-sim-rust):** The `SaveHypergraph` RPC handler in `main.rs` receives the request.
+5.  **Backend (wolfram-sim-rust):** The handler calls the appropriate method in the simulation engine (e.g., `simulation_manager.save_current_hypergraph(filename_suggestion)`).
+6.  **Backend (wolfram-sim-rust):**
     a.  The simulation manager retrieves the current `HypergraphState`.
-    b.  The `serialization` module serializes this state to a JSON string using `serde`.
+    b.  The serialization code serializes this state to a JSON string using `serde`.
     c.  The simulation manager (or serialization module) writes this string to a file, determining the final filename (e.g., respecting user suggestion or creating a new one).
-7.  **Backend (grpc_server):** The `wolfram_engine_core` returns confirmation (e.g., actual path of the saved file) to the RPC handler.
-8.  **Backend (grpc_server):** The RPC handler constructs a `SaveHypergraphResponse` and sends it back to the Frontend.
+7.  **Backend (wolfram-sim-rust):** The simulation engine returns confirmation (e.g., actual path of the saved file) to the RPC handler.
+8.  **Backend (wolfram-sim-rust):** The RPC handler constructs a `SaveHypergraphResponse` and sends it back to the Frontend.
 9.  **Frontend:** `apiClient.ts` receives the `SaveHypergraphResponse`.
 10. **Frontend:** Displays a confirmation message to the user (e.g., "Hypergraph saved to my_simulation.json").
 
 ### Load Hypergraph Execution (NEW)
 1.  **Frontend:** User clicks "Load Hypergraph" button and selects either a predefined example or a local file via a file input dialog.
-2.  **Frontend:** `SimulationControls.tsx` (or similar) calls a function in `apiClient.ts`, providing either an identifier for a predefined example or the content/path of the user-selected file.
+2.  **Frontend:** UI component calls a function in `apiClient.ts`, providing either an identifier for a predefined example or the content/path of the user-selected file.
 3.  **Frontend:** `apiClient.ts` sends a `LoadHypergraphRequest` to the Backend gRPC `LoadHypergraph` RPC. The request will contain the hypergraph data (if from a local file read by the client) or the identifier for a predefined example. (Alternatively, for local files, the frontend might just send the filename, and the backend reads it, depending on security/design choices). For MVP, let's assume the frontend can read the file content and send it, or send an identifier for a predefined one.
-4.  **Backend (grpc_server):** The `LoadHypergraph` RPC handler in `server.rs` receives the request.
-5.  **Backend (grpc_server):** The handler calls the appropriate method in `wolfram_engine_core` (e.g., `simulation_manager.load_hypergraph_from_data(hypergraph_json_string)` or `simulation_manager.load_predefined_hypergraph(example_id)`).
-6.  **Backend (wolfram_engine_core):**
-    a.  If loading from data: The `serialization` module deserializes the `HypergraphState` from the provided JSON string using `serde`.
+4.  **Backend (wolfram-sim-rust):** The `LoadHypergraph` RPC handler in `main.rs` receives the request.
+5.  **Backend (wolfram-sim-rust):** The handler calls the appropriate method in the simulation engine (e.g., `simulation_manager.load_hypergraph_from_data(hypergraph_json_string)` or `simulation_manager.load_predefined_hypergraph(example_id)`).
+6.  **Backend (wolfram-sim-rust):**
+    a.  If loading from data: The serialization code deserializes the `HypergraphState` from the provided JSON string using `serde`.
     b.  If loading a predefined example: The engine retrieves the example hypergraph data (e.g., from an embedded asset or a known file path) and deserializes it.
     c.  The simulation manager validates the loaded `HypergraphState` (basic structural checks).
     d.  The current simulation's `HypergraphState` is replaced with the newly loaded one. The simulation step number might be reset or set from the loaded data if present.
-7.  **Backend (grpc_server):** The `wolfram_engine_core` returns the new (loaded) `HypergraphState` to the RPC handler.
-8.  **Backend (grpc_server):** The RPC handler constructs a `LoadHypergraphResponse` (containing the `HypergraphState`) and sends it back to the Frontend.
+7.  **Backend (wolfram-sim-rust):** The simulation engine returns the new (loaded) `HypergraphState` to the RPC handler.
+8.  **Backend (wolfram-sim-rust):** The RPC handler constructs a `LoadHypergraphResponse` (containing the `HypergraphState`) and sends it back to the Frontend.
 9.  **Frontend:** `apiClient.ts` receives the `LoadHypergraphResponse`.
-10. **Frontend:** The `simulationStore.ts` is updated with the new hypergraph state, step number, etc.
-11. **Frontend:** UI components (e.g., `HypergraphVisualizer.tsx`, status displays) react to store changes and re-render, displaying the loaded hypergraph.
+10. **Frontend:** The state store is updated with the new hypergraph state, step number, etc.
+11. **Frontend:** UI components react to store changes and re-render, displaying the loaded hypergraph.
 
 ## Error Handling Strategy
 *   **Backend:** Rust's `Result` type will be used extensively. Errors from the simulation engine will be translated into appropriate gRPC error statuses.

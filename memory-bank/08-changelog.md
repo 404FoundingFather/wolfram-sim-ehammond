@@ -8,6 +8,9 @@ This document tracks significant changes to the project in chronological order, 
 
 ### Added
 - **Sprint 1: Core Hypergraph Implementation (2025-05-15):**
+    - Implemented `RelationId` type as a newtype pattern around `u64` with serialization support
+    - Implemented `Relation` struct with ID, ordered collection of AtomIds, and optional metadata
+    - Added methods for relation operations including arity and atom containment checks
     - Implemented `AtomId` type as a newtype pattern around `u64` with serialization support
     - Implemented `Atom` struct with ID and optional metadata
     - Added comprehensive unit tests for the new types

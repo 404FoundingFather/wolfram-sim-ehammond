@@ -142,6 +142,136 @@ match atom_with_metadata.metadata() {
 }
 ```
 
+### Hyperedge Representation with Ordered References
+
+**Use Case:** When you need to represent a hyperedge (relation) connecting multiple entities with preserved ordering of connections.
+
+```rust
+use std::fmt;
+use serde::{Serialize, Deserialize};
+use super::atom::AtomId;
+
+/// Represents a unique identifier for a relation in a hypergraph.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
+pub struct RelationId(pub u64);
+
+impl RelationId {
+    /// Creates a new RelationId with the specified ID value.
+    pub fn new(id: u64) -> Self {
+        RelationId(id)
+    }
+
+    /// Returns the inner value of the RelationId.
+    pub fn value(&self) -> u64 {
+        self.0
+    }
+}
+
+impl fmt::Display for RelationId {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(f, "Relation({})", self.0)
+    }
+}
+
+/// Represents a relation (hyperedge) in a hypergraph.
+/// In the Wolfram Physics Model, relations connect multiple atoms and their order is significant.
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+pub struct Relation {
+    /// The unique identifier for this relation
+    pub id: RelationId,
+    
+    /// The ordered collection of atom IDs that are part of this relation
+    pub atoms: Vec<AtomId>,
+    
+    /// Optional metadata or additional information about the relation
+    pub metadata: Option<String>,
+}
+
+impl Relation {
+    /// Creates a new Relation with the specified ID and atoms.
+    pub fn new(id: RelationId, atoms: Vec<AtomId>) -> Self {
+        Relation {
+            id,
+            atoms,
+            metadata: None,
+        }
+    }
+
+    /// Creates a new Relation with the specified ID, atoms, and metadata.
+    pub fn with_metadata(id: RelationId, atoms: Vec<AtomId>, metadata: String) -> Self {
+        Relation {
+            id,
+            atoms,
+            metadata: Some(metadata),
+        }
+    }
+
+    /// Returns the ID of this relation.
+    pub fn id(&self) -> RelationId {
+        self.id
+    }
+
+    /// Returns a reference to the atoms in this relation.
+    pub fn atoms(&self) -> &[AtomId] {
+        &self.atoms
+    }
+
+    /// Returns a mutable reference to the atoms in this relation.
+    pub fn atoms_mut(&mut self) -> &mut Vec<AtomId> {
+        &mut self.atoms
+    }
+
+    /// Returns the number of atoms in this relation.
+    pub fn arity(&self) -> usize {
+        self.atoms.len()
+    }
+
+    /// Checks if this relation contains the specified atom.
+    pub fn contains_atom(&self, atom_id: AtomId) -> bool {
+        self.atoms.contains(&atom_id)
+    }
+
+    /// Returns a reference to the metadata of this relation, if any.
+    pub fn metadata(&self) -> Option<&str> {
+        self.metadata.as_deref()
+    }
+
+    /// Sets the metadata for this relation.
+    pub fn set_metadata(&mut self, metadata: Option<String>) {
+        self.metadata = metadata;
+    }
+}
+```
+
+**Explanation:**
+- Uses a vector (`Vec<AtomId>`) to represent an ordered collection of atom references
+- Implements the new type pattern for the relation identifier, similar to `AtomId`
+- Provides methods to query the relation's properties (arity, atom containment)
+- Includes accessors for both immutable and mutable access to the atoms collection
+- Supports optional metadata similar to the `Atom` implementation
+
+**Usage Example:**
+```rust
+// Create atoms
+let atom1 = AtomId::new(1);
+let atom2 = AtomId::new(2);
+let atom3 = AtomId::new(3);
+
+// Create a relation connecting these atoms
+let relation_id = RelationId::new(42);
+let relation = Relation::new(relation_id, vec![atom1, atom2]);
+
+// Check properties
+assert_eq!(relation.arity(), 2);
+assert!(relation.contains_atom(atom1));
+assert!(!relation.contains_atom(atom3));
+
+// Modify atoms in the relation
+relation.atoms_mut().push(atom3);
+assert_eq!(relation.arity(), 3);
+assert!(relation.contains_atom(atom3));
+```
+
 ## Common Patterns
 
 ### [Pattern Name 1]
