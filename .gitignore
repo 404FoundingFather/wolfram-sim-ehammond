@@ -38,4 +38,5 @@ coverage/
 
 # Build output common names
 build/
-out/ wolfram-sim-rust/saved_hypergraphs/
+out/
+wolfram-sim-rust/saved_hypergraphs/
