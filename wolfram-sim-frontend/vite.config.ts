@@ -26,5 +26,18 @@ export default defineConfig({
         ? 'http://localhost:8080' 
         : 'http://localhost:8080'
     )
+  },
+  optimizeDeps: {
+    // Include CommonJS dependencies that need to be pre-bundled
+    include: [
+      'grpc-web',
+      'google-protobuf'
+    ]
+  },
+  resolve: {
+    alias: {
+      // Help Vite resolve the generated protobuf files
+      '@proto': '/src/generated/proto'
+    }
   }
 })
