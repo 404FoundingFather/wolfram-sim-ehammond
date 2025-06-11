@@ -1,5 +1,6 @@
 use std::sync::{Arc, Mutex};
 use tonic::{transport::Server, Request, Response, Status};
+use tonic_web::GrpcWebLayer;
 use tokio_stream::wrappers::ReceiverStream;
 use tokio_stream::StreamExt;
 use std::collections::HashMap;
@@ -508,12 +509,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         println!("  {}: {}", example_name, info);
     }
 
-    let addr = "[::1]:50051".parse()?;
+    let addr = "0.0.0.0:50051".parse()?;
     let simulator_service = MyWolframPhysicsSimulator::new();
 
     println!("WolframPhysicsSimulatorService listening on {}", addr);
 
     Server::builder()
+        .accept_http1(true) // Enable HTTP/1.1 for gRPC-Web
+        .layer(GrpcWebLayer::new()) // Enable gRPC-Web support
         .add_service(WolframPhysicsSimulatorServiceServer::new(simulator_service))
         .serve(addr)
         .await?;

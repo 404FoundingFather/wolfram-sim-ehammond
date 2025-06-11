@@ -1,23 +1,23 @@
 # Technical Context
 
-**Last Updated:** June 11, 2025 (Sprint 5 Completion - MVP Complete)
+**Last Updated:** June 11, 2025 (Real gRPC Client Implementation Complete)
 
 This document outlines the technical stack, dependencies, and development environment for the project.
 
 ## Technology Stack
 
-### Frontend ✅ IMPLEMENTED
+### Frontend ✅ IMPLEMENTED (Real gRPC Client)
 *   **React 18+** with TypeScript as the SPA framework
 *   **Vite** for build tooling and development server with hot module replacement
-*   **gRPC-Web** for communication with the backend gRPC service
+*   **gRPC-Web** for communication with the backend gRPC service (REAL CLIENT - not mock)
 *   **react-force-graph-2d** for interactive 2D hypergraph visualization
 *   **Zustand** for client-side state management
 *   **CSS-in-JS** (inline styles) for component styling following design specifications
 
-### Backend ✅ IMPLEMENTED
+### Backend ✅ IMPLEMENTED (gRPC-Web Support)
 *   **Rust**: Core language for the simulation engine
 *   **Tonic**: Rust gRPC library for service implementation
-*   **Tonic-web**: For gRPC-Web compatibility with browser clients
+*   **Tonic-web**: For gRPC-Web compatibility with browser clients ✅ ENABLED
 *   **Protocol Buffers**: For defining gRPC messages and service contracts
 *   **Serde**: For serialization and deserialization of Rust data structures (JSON persistence)
 *   **Chrono**: For timestamps in file naming and date handling
@@ -64,10 +64,10 @@ This document outlines the technical stack, dependencies, and development enviro
 6.  Build backend: `cd wolfram-sim-rust && cargo build`
 7.  Generate proto files (if needed): `cd wolfram-sim-frontend && npm run generate-proto`
 
-### Running Locally ✅ OPERATIONAL
-*   **Backend**: `cd wolfram-sim-rust && cargo run` (Starts gRPC service on [::1]:50051)
+### Running Locally ✅ OPERATIONAL (Real gRPC Connection)
+*   **Backend**: `cd wolfram-sim-rust && cargo run` (Starts gRPC service with gRPC-Web support on 0.0.0.0:50051)
 *   **Frontend**: `cd wolfram-sim-frontend && npm run dev` (Starts Vite dev server on localhost:3000)
-*   **Access**: Open http://localhost:3000 in web browser for full application
+*   **Access**: Open http://localhost:3000 in web browser for full application with real backend connection
 
 ### Testing ✅ VERIFIED
 *   **Backend**: `cargo test` (72 tests passing with 100% success rate)
@@ -115,22 +115,21 @@ This document outlines the technical stack, dependencies, and development enviro
 }
 ```
 
-### Backend Dependencies ✅ IMPLEMENTED
+### Backend Dependencies ✅ IMPLEMENTED (with gRPC-Web Support)
 ```toml
 [dependencies]
-tonic = "0.12"
-tonic-web = "0.12"
-prost = "0.13"
-tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
+tonic = "0.11"
+tonic-web = "0.11"  # ✅ Added for gRPC-Web browser compatibility
+prost = "0.12"
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 tokio-stream = "0.1"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 chrono = { version = "0.4", features = ["serde"] }
 thiserror = "1.0"
-env_logger = "0.11"
 
 [build-dependencies]
-tonic-build = "0.12"
+tonic-build = "0.11"
 
 [dev-dependencies]
 tempfile = "3.0"

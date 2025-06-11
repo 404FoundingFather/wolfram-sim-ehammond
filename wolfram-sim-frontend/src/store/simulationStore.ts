@@ -44,7 +44,7 @@ export interface SimulationState {
   // Actions
   initializeSimulation: (exampleId?: string) => Promise<void>;
   stepSimulation: (numSteps?: number) => Promise<void>;
-  runSimulation: () => void;
+  runSimulation: () => Promise<void>;
   pauseSimulation: () => void;
   stopSimulation: () => Promise<void>;
   resetSimulation: () => void;
@@ -143,7 +143,7 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
     }
   },
 
-  runSimulation: () => {
+  runSimulation: async () => {
     const state = get();
     if (state.isRunning || !state.isInitialized) return;
     
@@ -154,23 +154,31 @@ export const useSimulationStore = create<SimulationState>((set, get) => ({
       errorMessage: null 
     });
     
-    const cancelFn = apiClient.runSimulation(
-      { updateIntervalMs: state.updateInterval },
-      (update: ApiSimulationStateUpdate) => {
-        const currentState = get();
-        if (currentState.isRunning) {
-          set({
-            hypergraphState: update.currentGraph,
-            currentStepNumber: update.stepNumber,
-            recentEvents: update.recentEvents,
-            eventHistory: [...currentState.eventHistory, ...update.recentEvents].slice(-50),
-            statusMessage: update.statusMessage || `Step ${update.stepNumber} - Running`
-          });
+    try {
+      const cancelFn = await apiClient.runSimulation(
+        { updateIntervalMs: state.updateInterval },
+        (update: ApiSimulationStateUpdate) => {
+          const currentState = get();
+          if (currentState.isRunning) {
+            set({
+              hypergraphState: update.currentGraph,
+              currentStepNumber: update.stepNumber,
+              recentEvents: update.recentEvents,
+              eventHistory: [...currentState.eventHistory, ...update.recentEvents].slice(-50),
+              statusMessage: update.statusMessage || `Step ${update.stepNumber} - Running`
+            });
+          }
         }
-      }
-    );
-    
-    set({ cancelStream: cancelFn });
+      );
+      
+      set({ cancelStream: cancelFn });
+    } catch (error) {
+      set({
+        isRunning: false,
+        errorMessage: error instanceof Error ? error.message : 'Failed to start simulation',
+        statusMessage: 'Start simulation error'
+      });
+    }
   },
 
   pauseSimulation: () => {

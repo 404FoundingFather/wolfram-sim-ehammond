@@ -1,25 +1,7 @@
-// Note: Using mock implementation for now due to CommonJS/ES6 module compatibility issues
+// Real gRPC-Web client implementation with polyfill support
 
-// Import the TypeScript definitions for proper typing
-import type {
-  Atom,
-  Relation,
-  HypergraphState,
-  SimulationEvent,
-  InitializeRequest,
-  InitializeResponse,
-  StepRequest,
-  StepResponse,
-  RunRequest,
-  SimulationStateUpdate,
-  StopRequest,
-  StopResponse,
-  GetCurrentStateRequest,
-  SaveHypergraphRequest,
-  SaveHypergraphResponse,
-  LoadHypergraphRequest,
-  LoadHypergraphResponse
-} from '../generated/proto/wolfram_physics_pb';
+// Import polyfill first to set up require() and module.exports
+import './grpcPolyfill.js';
 
 // Types for easier frontend usage
 export interface ApiAtom {
@@ -41,6 +23,11 @@ export interface ApiSimulationEvent {
   ruleIdApplied: string;
   atomsInvolvedInput: string[];
   atomsInvolvedOutput: string[];
+  stepNumber: number;
+  atomsCreated: string[];
+  relationsCreated: string[];
+  relationsRemoved: string[];
+  description: string;
 }
 
 export interface ApiSimulationStateUpdate {
@@ -49,197 +36,6 @@ export interface ApiSimulationStateUpdate {
   stepNumber: number;
   isRunning?: boolean;
   statusMessage?: string;
-}
-
-// Mock protobuf classes for development
-class MockProtoClass {
-  private data: any = {};
-  
-  constructor(data?: any) {
-    if (data) this.data = data;
-  }
-  
-  getId() { return this.data.id || ''; }
-  setId(value: string) { this.data.id = value; }
-  
-  getAtomIdsList() { return this.data.atomIds || []; }
-  setAtomIdsList(value: string[]) { this.data.atomIds = value; }
-  
-  getAtomsList() { return this.data.atoms || []; }
-  setAtomsList(value: any[]) { this.data.atoms = value; }
-  
-  getRelationsList() { return this.data.relations || []; }
-  setRelationsList(value: any[]) { this.data.relations = value; }
-  
-  getStepNumber() { return this.data.stepNumber || 0; }
-  setStepNumber(value: number) { this.data.stepNumber = value; }
-  
-  getSuccess() { return this.data.success || false; }
-  setSuccess(value: boolean) { this.data.success = value; }
-  
-  getMessage() { return this.data.message || ''; }
-  setMessage(value: string) { this.data.message = value; }
-  
-  getInitialHypergraphState() { return this.data.initialHypergraphState; }
-  setInitialHypergraphState(value: any) { this.data.initialHypergraphState = value; }
-  
-  getNewHypergraphState() { return this.data.newHypergraphState; }
-  setNewHypergraphState(value: any) { this.data.newHypergraphState = value; }
-  
-  getEventsOccurredList() { return this.data.eventsOccurred || []; }
-  setEventsOccurredList(value: any[]) { this.data.eventsOccurred = value; }
-  
-  getCurrentStepNumber() { return this.data.currentStepNumber || 0; }
-  setCurrentStepNumber(value: number) { this.data.currentStepNumber = value; }
-  
-  getCurrentGraph() { return this.data.currentGraph; }
-  setCurrentGraph(value: any) { this.data.currentGraph = value; }
-  
-  getRecentEventsList() { return this.data.recentEvents || []; }
-  setRecentEventsList(value: any[]) { this.data.recentEvents = value; }
-  
-  getRuleIdApplied() { return this.data.ruleIdApplied || ''; }
-  setRuleIdApplied(value: string) { this.data.ruleIdApplied = value; }
-  
-  getAtomsInvolvedInputList() { return this.data.atomsInvolvedInput || []; }
-  setAtomsInvolvedInputList(value: string[]) { this.data.atomsInvolvedInput = value; }
-  
-  getAtomsInvolvedOutputList() { return this.data.atomsInvolvedOutput || []; }
-  setAtomsInvolvedOutputList(value: string[]) { this.data.atomsInvolvedOutput = value; }
-  
-  setPredefinedInitialStateId(value: string) { this.data.predefinedInitialStateId = value; }
-  setRuleIdsToUseList(value: string[]) { this.data.ruleIdsToUse = value; }
-  
-  setNumSteps(value: number) { this.data.numSteps = value; }
-  setUpdateIntervalMs(value: number) { this.data.updateIntervalMs = value; }
-  
-  setFilename(value: string) { this.data.filename = value; }
-  setOverwriteExisting(value: boolean) { this.data.overwriteExisting = value; }
-  setPrettyPrint(value: boolean) { this.data.prettyPrint = value; }
-  
-  getFilePath() { return this.data.filePath || ''; }
-  
-  setPredefinedExampleName(value: string) { this.data.predefinedExampleName = value; }
-  setFileContent(value: string) { this.data.fileContent = value; }
-  setFilePath(value: string) { this.data.filePath = value; }
-  
-  getLoadedState() { return this.data.loadedState; }
-  
-  serializeBinary() { return new Uint8Array(); }
-}
-
-// Mock gRPC client for development
-class MockGrpcClient {
-  private hostname: string;
-  
-  constructor(hostname: string) {
-    this.hostname = hostname;
-  }
-  
-  initializeSimulation(request: any, metadata: any, callback: Function) {
-    // Mock successful response
-    setTimeout(() => {
-      const response = new MockProtoClass({
-        success: true,
-        message: 'Mock initialization successful',
-        initialHypergraphState: new MockProtoClass({
-          atoms: [new MockProtoClass({ id: 'atom1' }), new MockProtoClass({ id: 'atom2' })],
-          relations: [new MockProtoClass({ atomIds: ['atom1', 'atom2'] })],
-          stepNumber: 0
-        })
-      });
-      callback(null, response);
-    }, 100);
-  }
-  
-  stepSimulation(request: any, metadata: any, callback: Function) {
-    setTimeout(() => {
-      const response = new MockProtoClass({
-        success: true,
-        message: 'Mock step completed',
-        newHypergraphState: new MockProtoClass({
-          atoms: [new MockProtoClass({ id: 'atom1' }), new MockProtoClass({ id: 'atom2' }), new MockProtoClass({ id: 'atom3' })],
-          relations: [new MockProtoClass({ atomIds: ['atom1', 'atom3'] }), new MockProtoClass({ atomIds: ['atom3', 'atom2'] })],
-          stepNumber: 1
-        }),
-        eventsOccurred: [new MockProtoClass({ id: 'event1', ruleIdApplied: 'edge_split', atomsInvolvedInput: ['atom1', 'atom2'], atomsInvolvedOutput: ['atom1', 'atom3', 'atom2'] })],
-        currentStepNumber: 1
-      });
-      callback(null, response);
-    }, 100);
-  }
-  
-  runSimulation(request: any, metadata: any) {
-    return {
-      on: (event: string, handler: Function) => {
-        if (event === 'data') {
-          // Mock streaming data
-          const mockUpdate = new MockProtoClass({
-            currentGraph: new MockProtoClass({
-              atoms: [new MockProtoClass({ id: 'atom1' }), new MockProtoClass({ id: 'atom2' })],
-              relations: [new MockProtoClass({ atomIds: ['atom1', 'atom2'] })],
-              stepNumber: 0
-            }),
-            recentEvents: [],
-            stepNumber: 0
-          });
-          setTimeout(() => handler(mockUpdate), 100);
-        }
-      },
-      cancel: () => console.log('Mock stream cancelled')
-    };
-  }
-  
-  stopSimulation(request: any, metadata: any, callback: Function) {
-    setTimeout(() => {
-      const response = new MockProtoClass({
-        success: true,
-        message: 'Mock simulation stopped'
-      });
-      callback(null, response);
-    }, 100);
-  }
-  
-  getCurrentState(request: any, metadata: any, callback: Function) {
-    setTimeout(() => {
-      const response = new MockProtoClass({
-        currentGraph: new MockProtoClass({
-          atoms: [new MockProtoClass({ id: 'atom1' }), new MockProtoClass({ id: 'atom2' })],
-          relations: [new MockProtoClass({ atomIds: ['atom1', 'atom2'] })],
-          stepNumber: 0
-        }),
-        recentEvents: [],
-        stepNumber: 0
-      });
-      callback(null, response);
-    }, 100);
-  }
-  
-  saveHypergraph(request: any, metadata: any, callback: Function) {
-    setTimeout(() => {
-      const response = new MockProtoClass({
-        success: true,
-        message: 'Mock save successful',
-        filePath: '/mock/path/hypergraph.json'
-      });
-      callback(null, response);
-    }, 100);
-  }
-  
-  loadHypergraph(request: any, metadata: any, callback: Function) {
-    setTimeout(() => {
-      const response = new MockProtoClass({
-        success: true,
-        message: 'Mock load successful',
-        loadedState: new MockProtoClass({
-          atoms: [new MockProtoClass({ id: 'loaded_atom1' }), new MockProtoClass({ id: 'loaded_atom2' })],
-          relations: [new MockProtoClass({ atomIds: ['loaded_atom1', 'loaded_atom2'] })],
-          stepNumber: 0
-        })
-      });
-      callback(null, response);
-    }, 100);
-  }
 }
 
 // Conversion functions between protobuf and API types
@@ -259,7 +55,7 @@ function convertHypergraphStateFromProto(state: any): ApiHypergraphState {
   return {
     atoms: state.getAtomsList().map(convertAtomFromProto),
     relations: state.getRelationsList().map(convertRelationFromProto),
-    stepNumber: 0 // Will be updated from the context
+    stepNumber: state.getStepNumber()
   };
 }
 
@@ -268,7 +64,12 @@ function convertSimulationEventFromProto(event: any): ApiSimulationEvent {
     id: event.getId(),
     ruleIdApplied: event.getRuleIdApplied(),
     atomsInvolvedInput: event.getAtomsInvolvedInputList(),
-    atomsInvolvedOutput: event.getAtomsInvolvedOutputList()
+    atomsInvolvedOutput: event.getAtomsInvolvedOutputList(),
+    stepNumber: event.getStepNumber(),
+    atomsCreated: event.getAtomsCreatedList(),
+    relationsCreated: event.getRelationsCreatedList(),
+    relationsRemoved: event.getRelationsRemovedList(),
+    description: event.getDescription()
   };
 }
 
@@ -278,21 +79,119 @@ function convertSimulationStateUpdateFromProto(update: any): ApiSimulationStateU
     currentGraph: currentGraph ? convertHypergraphStateFromProto(currentGraph) : { atoms: [], relations: [] },
     recentEvents: update.getRecentEventsList().map(convertSimulationEventFromProto),
     stepNumber: update.getStepNumber(),
-    isRunning: true, // Will be managed by the frontend
-    statusMessage: 'Connected'
+    isRunning: update.getIsRunning(),
+    statusMessage: update.getStatusMessage()
   };
+}
+
+// Function to load gRPC modules dynamically
+async function loadGrpcModules() {
+  try {
+    console.log('Loading gRPC modules...');
+    
+    // Ensure global environment is set up
+    if (!(window as any).proto) {
+      (window as any).proto = {};
+    }
+    
+    // Load protobuf messages first
+    const messagesScript = document.createElement('script');
+    messagesScript.src = '/src/generated/proto/wolfram_physics_pb.js';
+    messagesScript.type = 'text/javascript';
+    
+    const messagesPromise = new Promise((resolve, reject) => {
+      messagesScript.onload = () => {
+        console.log('Protobuf messages loaded');
+        
+        // The protobuf file exports its messages to the global proto namespace
+        const protoMessages = (window as any).proto?.wolfram_physics_simulator;
+        if (!protoMessages) {
+          reject(new Error('Protobuf messages not found in global proto namespace'));
+          return;
+        }
+        
+        // Store in a way that the gRPC client can access
+        (window as any).protoMessages = protoMessages;
+        resolve(protoMessages);
+      };
+      messagesScript.onerror = (error) => {
+        console.error('Failed to load protobuf messages:', error);
+        reject(error);
+      };
+    });
+    
+    document.head.appendChild(messagesScript);
+    const protoMessages = await messagesPromise;
+    
+    // Reset module.exports for the next script
+    (window as any).module = { exports: {} };
+    
+    // Load gRPC client
+    const clientScript = document.createElement('script');
+    clientScript.src = '/src/generated/proto/wolfram_physics_grpc_web_pb.js';
+    clientScript.type = 'text/javascript';
+    
+    const clientPromise = new Promise((resolve, reject) => {
+      clientScript.onload = () => {
+        console.log('gRPC client loaded');
+        
+        // The gRPC client exports to module.exports
+        const grpcExports = (window as any).module.exports;
+        if (!grpcExports) {
+          reject(new Error('gRPC client not found in module.exports'));
+          return;
+        }
+        
+        resolve(grpcExports);
+      };
+      clientScript.onerror = (error) => {
+        console.error('Failed to load gRPC client:', error);
+        reject(error);
+      };
+    });
+    
+    document.head.appendChild(clientScript);
+    const grpcClient = await clientPromise;
+    
+    console.log('All gRPC modules loaded successfully');
+    return {
+      protoMessages,
+      grpcClient
+    };
+  } catch (error) {
+    console.error('Failed to load gRPC modules:', error);
+    throw error;
+  }
 }
 
 // Main API Client Class
 export class WolframApiClient {
   private client: any;
-  private protoModule: any;
+  private protoMessages: any;
+  private grpcClient: any;
+  private initialized: boolean = false;
 
-  constructor(hostname: string = 'http://localhost:8080') {
-    // Use mock client for now
-    console.warn('Using mock gRPC client for development');
-    this.client = new MockGrpcClient(hostname);
-    this.protoModule = MockProtoClass;
+  constructor(private hostname: string = 'http://localhost:3000') {
+    console.log('Initializing real gRPC-Web client, connecting to:', hostname);
+  }
+
+  private async ensureInitialized() {
+    if (!this.initialized) {
+      console.log('Initializing gRPC client...');
+      const modules = await loadGrpcModules();
+      this.protoMessages = modules.protoMessages;
+      this.grpcClient = modules.grpcClient;
+      
+      // Access the client constructor from the loaded modules
+      const ClientConstructor = this.grpcClient.WolframPhysicsSimulatorServicePromiseClient;
+      if (!ClientConstructor) {
+        throw new Error('WolframPhysicsSimulatorServicePromiseClient not found in loaded modules');
+      }
+      
+      this.client = new ClientConstructor(this.hostname);
+      this.initialized = true;
+      console.log('gRPC client initialized successfully');
+    }
   }
 
   // Initialize simulation
@@ -300,8 +199,10 @@ export class WolframApiClient {
     predefinedInitialStateId?: string;
     ruleIdsToUse?: string[];
   }): Promise<{ success: boolean; message: string; initialState?: ApiHypergraphState }> {
-    return new Promise((resolve, reject) => {
-      const request = new this.protoModule();
+    try {
+      await this.ensureInitialized();
+      
+      const request = new this.protoMessages.InitializeRequest();
       
       if (options.predefinedInitialStateId) {
         request.setPredefinedInitialStateId(options.predefinedInitialStateId);
@@ -311,26 +212,19 @@ export class WolframApiClient {
         request.setRuleIdsToUseList(options.ruleIdsToUse);
       }
 
-      this.client.initializeSimulation(request, {}, (err: any, response: any) => {
-        if (err) {
-          reject(err);
-          return;
-        }
+      const response = await this.client.initializeSimulation(request);
 
-        if (!response) {
-          reject(new Error('No response received'));
-          return;
-        }
-
-        resolve({
-          success: response.getSuccess(),
-          message: response.getMessage(),
-          initialState: response.getInitialHypergraphState() 
-            ? convertHypergraphStateFromProto(response.getInitialHypergraphState())
-            : undefined
-        });
-      });
-    });
+      return {
+        success: response.getSuccess(),
+        message: response.getMessage(),
+        initialState: response.getInitialHypergraphState() 
+          ? convertHypergraphStateFromProto(response.getInitialHypergraphState())
+          : undefined
+      };
+    } catch (error) {
+      console.error('Initialize simulation error:', error);
+      throw new Error(`Failed to initialize simulation: ${error}`);
+    }
   }
 
   // Step simulation
@@ -341,32 +235,27 @@ export class WolframApiClient {
     events?: ApiSimulationEvent[];
     currentStepNumber?: number;
   }> {
-    return new Promise((resolve, reject) => {
-      const request = new this.protoModule();
+    try {
+      await this.ensureInitialized();
+      
+      const request = new this.protoMessages.StepRequest();
       request.setNumSteps(numSteps);
 
-      this.client.stepSimulation(request, {}, (err: any, response: any) => {
-        if (err) {
-          reject(err);
-          return;
-        }
+      const response = await this.client.stepSimulation(request);
 
-        if (!response) {
-          reject(new Error('No response received'));
-          return;
-        }
-
-        resolve({
-          success: true, // Assume success if we got a response
-          message: 'Step completed',
-          newState: response.getNewHypergraphState() 
-            ? convertHypergraphStateFromProto(response.getNewHypergraphState())
-            : undefined,
-          events: response.getEventsOccurredList().map(convertSimulationEventFromProto),
-          currentStepNumber: response.getCurrentStepNumber()
-        });
-      });
-    });
+      return {
+        success: response.getSuccess(),
+        message: response.getMessage(),
+        newState: response.getNewHypergraphState() 
+          ? convertHypergraphStateFromProto(response.getNewHypergraphState())
+          : undefined,
+        events: response.getEventsOccurredList().map(convertSimulationEventFromProto),
+        currentStepNumber: response.getCurrentStepNumber()
+      };
+    } catch (error) {
+      console.error('Step simulation error:', error);
+      throw new Error(`Failed to step simulation: ${error}`);
+    }
   }
 
   // Start continuous simulation (streaming)
@@ -375,72 +264,83 @@ export class WolframApiClient {
     maxSteps?: number;
     stopOnFixedPoint?: boolean;
   }, onUpdate: (update: ApiSimulationStateUpdate) => void): Promise<() => void> {
-    const request = new this.protoModule();
-    
-    if (options.updateIntervalMs !== undefined) {
-      request.setUpdateIntervalMs(options.updateIntervalMs);
+    try {
+      await this.ensureInitialized();
+      
+      const request = new this.protoMessages.RunRequest();
+      
+      if (options.updateIntervalMs !== undefined) {
+        request.setUpdateIntervalMs(options.updateIntervalMs);
+      }
+      
+      if (options.maxSteps !== undefined) {
+        request.setMaxSteps(options.maxSteps);
+      }
+      
+      if (options.stopOnFixedPoint !== undefined) {
+        request.setStopOnFixedPoint(options.stopOnFixedPoint);
+      }
+
+      const stream = this.client.runSimulation(request);
+      
+      stream.on('data', (response: any) => {
+        onUpdate(convertSimulationStateUpdateFromProto(response));
+      });
+      
+      stream.on('error', (error: any) => {
+        console.error('Stream error:', error);
+      });
+
+      stream.on('end', () => {
+        console.log('Stream ended');
+      });
+
+      // Return cancellation function
+      return () => {
+        stream.cancel();
+      };
+    } catch (error) {
+      console.error('Run simulation error:', error);
+      throw new Error(`Failed to start simulation: ${error}`);
     }
-
-    const stream = this.client.runSimulation(request, {});
-    
-    stream.on('data', (response: any) => {
-      onUpdate(convertSimulationStateUpdateFromProto(response));
-    });
-    
-    stream.on('error', (err: any) => {
-      console.error('Stream error:', err);
-    });
-
-    // Return cancellation function
-    return () => {
-      stream.cancel();
-    };
   }
 
   // Stop simulation
   async stopSimulation(): Promise<{ success: boolean; message: string; finalState?: ApiHypergraphState }> {
-    return new Promise((resolve, reject) => {
-      const request = new this.protoModule();
+    try {
+      await this.ensureInitialized();
+      
+      const request = new this.protoMessages.StopRequest();
 
-      this.client.stopSimulation(request, {}, (err: any, response: any) => {
-        if (err) {
-          reject(err);
-          return;
-        }
+      const response = await this.client.stopSimulation(request);
 
-        if (!response) {
-          reject(new Error('No response received'));
-          return;
-        }
-
-        resolve({
-          success: response.getSuccess(),
-          message: response.getMessage(),
-          finalState: undefined // Will be handled by separate getCurrentState call
-        });
-      });
-    });
+      return {
+        success: response.getSuccess(),
+        message: response.getMessage(),
+        finalState: response.getFinalState()
+          ? convertHypergraphStateFromProto(response.getFinalState())
+          : undefined
+      };
+    } catch (error) {
+      console.error('Stop simulation error:', error);
+      throw new Error(`Failed to stop simulation: ${error}`);
+    }
   }
 
   // Get current state
   async getCurrentState(): Promise<ApiSimulationStateUpdate> {
-    return new Promise((resolve, reject) => {
-      const request = new this.protoModule();
+    try {
+      await this.ensureInitialized();
+      
+      const request = new this.protoMessages.GetCurrentStateRequest();
 
-      this.client.getCurrentState(request, {}, (err: any, response: any) => {
-        if (err) {
-          reject(err);
-          return;
-        }
+      const response = await this.client.getCurrentState(request);
 
-        if (!response) {
-          reject(new Error('No response received'));
-          return;
-        }
-
-        resolve(convertSimulationStateUpdateFromProto(response));
-      });
-    });
+      return convertSimulationStateUpdateFromProto(response);
+    } catch (error) {
+      console.error('Get current state error:', error);
+      throw new Error(`Failed to get current state: ${error}`);
+    }
   }
 
   // Save hypergraph
@@ -449,8 +349,10 @@ export class WolframApiClient {
     overwriteExisting?: boolean;
     prettyPrint?: boolean;
   } = {}): Promise<{ success: boolean; message: string; filePath?: string }> {
-    return new Promise((resolve, reject) => {
-      const request = new this.protoModule();
+    try {
+      await this.ensureInitialized();
+      
+      const request = new this.protoMessages.SaveHypergraphRequest();
       
       if (options.filename) {
         request.setFilename(options.filename);
@@ -462,24 +364,17 @@ export class WolframApiClient {
         request.setPrettyPrint(options.prettyPrint);
       }
 
-      this.client.saveHypergraph(request, {}, (err: any, response: any) => {
-        if (err) {
-          reject(err);
-          return;
-        }
+      const response = await this.client.saveHypergraph(request);
 
-        if (!response) {
-          reject(new Error('No response received'));
-          return;
-        }
-
-        resolve({
-          success: response.getSuccess(),
-          message: response.getMessage(),
-          filePath: response.getFilePath()
-        });
-      });
-    });
+      return {
+        success: response.getSuccess(),
+        message: response.getMessage(),
+        filePath: response.getFilePath()
+      };
+    } catch (error) {
+      console.error('Save hypergraph error:', error);
+      throw new Error(`Failed to save hypergraph: ${error}`);
+    }
   }
 
   // Load hypergraph
@@ -488,8 +383,10 @@ export class WolframApiClient {
     fileContent?: string;
     filePath?: string;
   }): Promise<{ success: boolean; message: string; loadedState?: ApiHypergraphState }> {
-    return new Promise((resolve, reject) => {
-      const request = new this.protoModule();
+    try {
+      await this.ensureInitialized();
+      
+      const request = new this.protoMessages.LoadHypergraphRequest();
       
       if (source.predefinedExampleName) {
         request.setPredefinedExampleName(source.predefinedExampleName);
@@ -499,28 +396,21 @@ export class WolframApiClient {
         request.setFilePath(source.filePath);
       }
 
-      this.client.loadHypergraph(request, {}, (err: any, response: any) => {
-        if (err) {
-          reject(err);
-          return;
-        }
+      const response = await this.client.loadHypergraph(request);
 
-        if (!response) {
-          reject(new Error('No response received'));
-          return;
-        }
-
-        resolve({
-          success: response.getSuccess(),
-          message: response.getMessage(),
-          loadedState: response.getLoadedState() 
-            ? convertHypergraphStateFromProto(response.getLoadedState())
-            : undefined
-        });
-      });
-    });
+      return {
+        success: response.getSuccess(),
+        message: response.getMessage(),
+        loadedState: response.getLoadedState()
+          ? convertHypergraphStateFromProto(response.getLoadedState())
+          : undefined
+      };
+    } catch (error) {
+      console.error('Load hypergraph error:', error);
+      throw new Error(`Failed to load hypergraph: ${error}`);
+    }
   }
 }
 
-// Export a default instance
+// Create a singleton instance for the application
 export const apiClient = new WolframApiClient(); 

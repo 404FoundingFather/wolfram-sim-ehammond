@@ -125,7 +125,7 @@ const HypergraphVisualizer: React.FC<HypergraphVisualizerProps> = ({
   }, []);
 
   // Link rendering
-  const linkCanvasObject = useCallback((link: any, ctx: CanvasRenderingContext2D, globalScale: number) => {
+  const linkCanvasObject = useCallback((link: any, ctx: CanvasRenderingContext2D, _globalScale: number) => {
     const MAX_FONT_SIZE = 4;
     const LABEL_NODE_MARGIN = 1;
 

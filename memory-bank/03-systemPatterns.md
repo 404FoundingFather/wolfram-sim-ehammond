@@ -1,6 +1,6 @@
 # System Patterns
 
-**Last Updated:** June 11, 2025 (Sprint 5 Completion - MVP Complete)
+**Last Updated:** June 11, 2025 (Real gRPC Client Implementation Complete)
 
 This document describes the architecture, design patterns, and code organization principles used in the Wolfram Physics Simulator MVP.
 
