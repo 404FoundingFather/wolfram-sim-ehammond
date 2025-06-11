@@ -70,8 +70,6 @@ This document tracks the current status of development tasks using a Kanban-styl
 ## To Do (Sprint 1: Core Hypergraph & Rule Representation - F1.1, F1.2)
 **Goal:** Implement stable data structures for atoms, relations, hypergraphs, and rule definitions in Rust.
 
--   Task: Define `Rule` struct (pattern hypergraph, replacement hypergraph) (F1.2) - [Owner TBD]
--   Task: Implement storage for a set of hardcoded rules (e.g., `{{x,y}} -> {{x,z},{z,y}}`) (F1.2) - [Owner TBD]
 -   Task: Unit tests for all data structures and basic operations (F1.1, F1.2) - [Owner TBD]
 
 --- 
@@ -116,6 +114,18 @@ This document tracks the current status of development tasks using a Kanban-styl
 ## Done
 
 **Sprint 1: Core Hypergraph & Rule Representation Tasks (F1.1, F1.2)**
+-   Task: Define `Rule` struct (pattern hypergraph, replacement hypergraph) (F1.2) - [Completed May 16, 2025]
+    - Implemented `RuleId` type with appropriate methods
+    - Implemented `Rule` struct with pattern and replacement fields
+    - Added methods for creating, querying, and manipulating rules
+    - Added implementation for the classic {{x,y}} -> {{x,z},{z,y}} edge splitting rule
+    - Implemented `RuleSet` for managing collections of rules
+    - Added comprehensive unit tests for all functionality
+-   Task: Implement storage for a set of hardcoded rules (e.g., `{{x,y}} -> {{x,z},{z,y}}`) (F1.2) - [Completed May 16, 2025]
+    - Implemented `RuleSet` that can store and manage multiple rules
+    - Added methods for adding, querying, and iterating over rules
+    - Implemented `create_basic_ruleset()` that creates a set with the basic edge splitting rule
+    - Added unit tests for rule storage functionality
 -   Task: Implement core `Hypergraph` struct with methods for add/remove, basic queries (F1.1) - [Completed May 16, 2025]
     - Implemented `Hypergraph` struct with core data storage using HashMaps for atoms and relations
     - Added indexed lookup from atoms to relations for efficient querying

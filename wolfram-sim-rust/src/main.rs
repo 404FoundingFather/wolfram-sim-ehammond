@@ -11,6 +11,7 @@ use wolfram_sim_rust::wolfram_physics_simulator::{
 
 // Import our core data structures
 use wolfram_sim_rust::hypergraph::{Atom, AtomId};
+use wolfram_sim_rust::rules::{rule::{Rule, RuleSet}, pattern::Pattern};
 
 // Define a struct that will implement our service
 #[derive(Debug, Default)]
@@ -95,6 +96,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let atom_id = AtomId::new(1);
     let atom = Atom::new(atom_id);
     println!("Created test atom: {:?} with ID: {}", atom, atom.id());
+
+    // Test our Rule implementation
+    let ruleset = RuleSet::create_basic_ruleset();
+    println!("Created basic ruleset with {} rules", ruleset.len());
+    
+    // Print information about each rule
+    for rule in ruleset.iter() {
+        println!("Rule: {}", rule.name().unwrap_or("Unnamed"));
+        println!("  Pattern has {} relations", rule.pattern().len());
+        println!("  Replacement has {} relations", rule.replacement().len());
+    }
 
     let addr = "[::1]:50051".parse()?;
     let simulator_service = MyWolframPhysicsSimulator::default();

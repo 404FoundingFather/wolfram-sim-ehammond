@@ -7,6 +7,15 @@ This document tracks significant changes to the project in chronological order, 
 ## [Unreleased] - MVP Development
 
 ### Added
+- **Sprint 1: Rule & Pattern Implementation (2025-05-16):**
+    - Implemented `RuleId` type with appropriate methods for unique identification
+    - Implemented `Rule` struct for representing hypergraph rewrite rules with pattern and replacement
+    - Created `Pattern`, `PatternRelation`, and `PatternElement` types to support rule definitions
+    - Implemented `Variable` type and `Binding` mechanisms for pattern matching
+    - Added `RuleSet` for managing collections of rewrite rules
+    - Implemented the classic {{x,y}} -> {{x,z},{z,y}} edge splitting rule
+    - Added comprehensive unit tests for rule and pattern functionality
+
 - **Sprint 1: Core Hypergraph Implementation (2025-05-16):**
     - Implemented `Hypergraph` struct with efficient data structures for atoms and relations
     - Created indexed lookup from atoms to relations for improved query performance
@@ -50,6 +59,13 @@ This document tracks significant changes to the project in chronological order, 
     - Configured gRPC-Web client code generation for the frontend.
 
 ### Changed
+- **Updated System Patterns Documentation (2025-05-16):**
+    - Updated `memory-bank/03-systemPatterns.md` to reflect the implementation status of `Hypergraph` and `Rules` modules
+    - Updated directory structure to match the current project organization
+    - Added implementation details for `Pattern`, `Variable`, and `Binding` types
+    - Corrected the project root path and file structure
+    - Marked completed components with ✅ status indicators
+
 - **System Patterns and UI Design Alignment for Save/Load (2025-05-14):**
     - Updated `memory-bank/03-systemPatterns.md` to reflect save/load RPCs, data flows, and security considerations for file I/O.
     - Updated `memory-bank/05-uidesign.md` to include UI controls and user flows for hypergraph save/load functionality.
@@ -137,6 +153,12 @@ This document tracks significant changes to the project in chronological order, 
 - [Removed functionality]
 
 ## Project Milestones
+
+### Sprint 1 Completion: Rule Structure Implementation - 2025-05-16
+- Implemented the Rule and Pattern types required for rewrite rules
+- Created a working RuleSet with the classic edge splitting rule
+- Added comprehensive support for pattern variables and bindings
+- Sprint 1 is nearly complete; only remaining task is comprehensive unit testing
 
 ### Sprint 1 Continued: Core Hypergraph Implementation - 2025-05-16
 - Completed the `Hypergraph` implementation with efficient data structures and comprehensive API

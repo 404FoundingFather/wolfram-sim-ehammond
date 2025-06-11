@@ -1,6 +1,6 @@
 # System Patterns
 
-**Last Updated:** May 15, 2025
+**Last Updated:** May 16, 2025
 
 This document describes the architecture, design patterns, and code organization principles used in the Wolfram Physics Simulator MVP.
 
@@ -26,18 +26,23 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 ## Design Patterns
 
 ### Backend (Rust Simulation Engine)
-*   **Hypergraph Representation:**
+*   **Hypergraph Representation:** ✅ IMPLEMENTED
     *   **Purpose:** To efficiently store and manipulate the hypergraph, representing atoms and relations (hyperedges).
-    *   **Implementation:** Custom Rust structs for `AtomId`, `Atom` metadata, `Relation` (e.g., `Vec<AtomId>`), and the main `Hypergraph` container. Data structures will be chosen for efficient querying and modification (e.g., `HashSet`, `Vec`, `HashMap`).
-    *   **Key Classes/Components:** Defined within the `wolfram-sim-rust` codebase in modules like:
-        *   `hypergraph/atom.rs`, `hypergraph/relation.rs`, `hypergraph/hypergraph.rs` (to be implemented)
-*   **Rule Engine:**
+    *   **Implementation:** Custom Rust structs for `AtomId`, `Atom` metadata, `Relation` (as a `Vec<AtomId>`), and the main `Hypergraph` container. Efficient data structures are used for storage and querying, including `HashMap` for atoms and relations and indexed lookups for atom-to-relation mappings.
+    *   **Key Classes/Components:** Implemented within the `wolfram-sim-rust` codebase:
+        *   `hypergraph/atom.rs`: `AtomId` and `Atom` implementations
+        *   `hypergraph/relation.rs`: `RelationId` and `Relation` implementations
+        *   `hypergraph/hypergraph.rs`: Main `Hypergraph` container with methods for adding/removing atoms and relations, querying, and ID generation
+        *   `hypergraph/mod.rs`: Module exports and structure
+*   **Rule Engine:** ✅ PARTIALLY IMPLEMENTED
     *   **Purpose:** To define, store, match, and apply rewrite rules.
-    *   **Implementation:** Structs for `Rule` (pattern and replacement hypergraphs), variable representation. Pattern matching will involve sub-hypergraph isomorphism algorithms. Rewriting logic will modify the main hypergraph based on matched rules.
-    *   **Key Classes/Components:** Modules to be implemented within `wolfram-sim-rust`:
-        *   `rules/rule.rs`, `rules/pattern.rs` (to be implemented)
-        *   `matching/isomorphism.rs` (or similar for pattern matching logic, to be implemented)
-        *   `evolution/rewriter.rs` (for applying rewrites, to be implemented)
+    *   **Implementation:** Implemented `Rule` struct (pattern and replacement hypergraphs), `Variable` for pattern matching, and `Binding` for variable substitution. The `RuleSet` allows managing collections of rules, including a default `create_basic_ruleset()` method with the classic edge-splitting rule (`{{x,y}} -> {{x,z},{z,y}}`).
+    *   **Key Classes/Components:** Implemented within `wolfram-sim-rust`:
+        *   `rules/rule.rs`: `RuleId`, `Rule`, and `RuleSet` implementations
+        *   `rules/pattern.rs`: `Pattern`, `PatternRelation`, `PatternElement`, `Variable`, and `Binding` implementations
+        *   `rules/mod.rs`: Module exports and structure
+        *   `matching/isomorphism.rs`: Pattern matching logic (to be implemented)
+        *   `evolution/rewriter.rs`: Apply rewrites (to be implemented)
 *   **Stateful Simulation Loop & Event Management:**
     *   **Purpose:** To manage the evolution of the hypergraph over discrete steps or continuous updates, including event selection.
     *   **Implementation:** The engine maintains a "current state" of the hypergraph. Rule application modifies this state. Event selection logic (e.g., deterministic for MVP) chooses which match to apply.
@@ -88,10 +93,15 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 │   ├── src/
 │   │   ├── lib.rs         // Library exports
 │   │   ├── main.rs        // Entry point, gRPC server setup
-│   │   └── hypergraph/    // Hypergraph data structures
+│   │   ├── hypergraph/    // Hypergraph data structures
+│   │   │   ├── mod.rs     // Module definitions
+│   │   │   ├── atom.rs    // Atom and AtomId implementations
+│   │   │   ├── relation.rs // Relation and RelationId implementations
+│   │   │   └── hypergraph.rs // Hypergraph container implementation
+│   │   └── rules/         // Rule engine data structures
 │   │       ├── mod.rs     // Module definitions
-│   │       ├── atom.rs    // Atom and AtomId implementations
-│   │       └── relation.rs // Relation and RelationId implementations
+│   │       ├── pattern.rs // Pattern, Variable, and Binding implementations
+│   │       └── rule.rs    // Rule and RuleSet implementations
 │   ├── Cargo.toml         // Rust dependencies
 │   └── Cargo.lock         // Locked dependencies
 ├── wolfram-sim-frontend/   // React TypeScript frontend
@@ -117,7 +127,8 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 
 ### Module Responsibilities
 *   **`wolfram-sim-rust`**: Contains all Rust backend code including simulation engine logic and gRPC service.
-    *   `src/hypergraph/`: Core data structures for the simulation (atoms, relations).
+    *   `src/hypergraph/`: Core data structures for the simulation (atoms, relations, hypergraph container).
+    *   `src/rules/`: Rule engine data structures (rules, patterns, variables, bindings).
     *   `src/lib.rs`: Exposes the library functionality.
     *   `src/main.rs`: Entry point and gRPC server implementation.
 *   **`wolfram-sim-frontend/src`**: Contains all TypeScript SPA frontend code, including React components and gRPC-Web client.
@@ -133,7 +144,7 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 5.  **Backend (wolfram-sim-rust):** The handler calls the appropriate method in the simulation engine (e.g., `simulation_manager.step(1)`).
 6.  **Backend (wolfram-sim-rust):**
     a.  The simulation manager retrieves the current `Hypergraph` state.
-    b.  The matching logic finds applicable rule matches.
+    b.  The matching logic finds applicable rule matches using pattern matching against the current `Hypergraph`.
     c.  Event selection logic (or simple logic in manager) selects one match to apply.
     d.  The rewriter applies the rule, modifying the `Hypergraph` (creating/deleting atoms and relations).
     e.  A `SimulationEvent` is generated.
@@ -224,8 +235,7 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 *   **Accessibility (a11y):** Basic accessibility practices for web UI (e.g., semantic HTML) will be considered, but comprehensive a11y auditing is out of scope for MVP.
 
 ## Testing Strategy
-*   **Unit Tests (Rust):** `cargo test` for `wolfram_engine_core` modules.
-*   **Integration Tests (Rust/gRPC):** Testing `grpc_server` endpoints and their interaction with `wolfram_engine_core`.
+*   **Unit Tests (Rust):** `cargo test` for all modules. Current implementation includes comprehensive unit tests for `hypergraph` and `rules` modules.
+*   **Integration Tests (Rust/gRPC):** Testing `grpc_server` endpoints and their interaction with core modules.
 *   **E2E Tests (Frontend):** Using frameworks like Cypress or Playwright (Post-MVP consideration).
-* [Test organization]
-* [Coverage goals]
+*   **Test Coverage:** Aim for high coverage of core algorithms and data structures, particularly pattern matching and rule application.

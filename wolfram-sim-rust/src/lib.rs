@@ -3,6 +3,7 @@
 //! hypergraph evolution according to the Wolfram Physics Model.
 
 pub mod hypergraph;
+pub mod rules;
 
 // For gRPC service generation
 pub mod wolfram_physics_simulator {
