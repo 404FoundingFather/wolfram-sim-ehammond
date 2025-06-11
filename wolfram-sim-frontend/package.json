@@ -11,13 +11,21 @@
     "generate-proto": "protoc -I=../proto ../proto/wolfram_physics.proto --js_out=import_style=es6,binary:src/generated/proto --grpc-web_out=import_style=commonjs,mode=grpcwebtext:src/generated/proto --plugin=protoc-gen-ts=./node_modules/ts-protoc-gen/bin/protoc-gen-ts --ts_out=service=grpc-web:src/generated/proto"
   },
   "dependencies": {
+    "@types/google-protobuf": "^3.15.12",
+    "d3": "^7.9.0",
     "google-protobuf": "^3.21.4",
     "grpc-web": "^1.5.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-force-graph-2d": "^1.27.1",
+    "three": "^0.177.0",
+    "vis-data": "^7.1.9",
+    "vis-network": "^9.1.12",
+    "zustand": "^5.0.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.25.0",
+    "@types/node": "^24.0.0",
     "@types/react": "^19.1.2",
     "@types/react-dom": "^19.1.2",
     "@vitejs/plugin-react": "^4.4.1",
