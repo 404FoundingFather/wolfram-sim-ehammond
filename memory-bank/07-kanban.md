@@ -1,6 +1,6 @@
 # Project Progress (Kanban Board)
 
-**Last Updated:** June 11, 2025 (Sprint 2 Completion)
+**Last Updated:** June 11, 2025 (Sprint 3 Completion)
 
 This document tracks the current status of development tasks using a Kanban-style board. Items are moved based on the Development Plan (`06-developmentPlan.md`).
 
@@ -74,35 +74,20 @@ This document tracks the current status of development tasks using a Kanban-styl
 
 --- 
 
-## To Do (Sprint 3: Simulation Loop & Event Management - F1.5, F1.6, F1.7)
-**Goal:** Implement simulation step management, event tracking, and hypergraph persistence.
-**Dependencies:** Sprint 2 completion.
+## To Do (Sprint 4: gRPC Service Implementation - F2.1, F2.2, F2.3)
+**Goal:** Implement gRPC service layer to expose simulation engine functionality.
+**Dependencies:** Sprint 3 completion.
 
--   Task: Implement step-by-step simulation loop logic (match, select, apply) (F1.5) - [Owner TBD]
--   Task: Implement "continuous" simulation mode (F1.5) - [Owner TBD]
--   Task: Define and log/track simulation "events" (application of a rule) for transmission (F1.6) - [Owner TBD]
--   Task: Implement `serde` serialization for `HypergraphState` to JSON (F1.7) - [Owner TBD]
--   Task: Implement `serde` deserialization for `HypergraphState` from JSON (F1.7) - [Owner TBD]
--   Task: Develop logic to save current hypergraph to a user-specified/default file (F1.7) - [Owner TBD]
--   Task: Develop logic to load a hypergraph from a user-selected file, replacing current state (F1.7) - [Owner TBD]
--   Task: Package 3-5 predefined hypergraph example JSON files as assets and implement loading them (F1.7) - [Owner TBD]
--   Task: Unit tests for simulation loop components and save/load functionality (F1.5, F1.6, F1.7) - [Owner TBD]
-
---- 
-
-## To Do (Sprint 3 - Example: Hypergraph Persistence & Simulation Loop Refinements - F1.7, F1.5, F1.6)
-**Goal:** Implement save/load for hypergraphs and refine simulation step/event logic.
-**Dependencies:** Sprint 1 & 2 completion.
-
--   Task: Implement `serde` serialization for `HypergraphState` to JSON (F1.7) - [Owner TBD]
--   Task: Implement `serde` deserialization for `HypergraphState` from JSON (F1.7) - [Owner TBD]
--   Task: Develop logic to save current hypergraph to a user-specified/default file (F1.7) - [Owner TBD]
--   Task: Develop logic to load a hypergraph from a user-selected file, replacing current state (F1.7) - [Owner TBD]
--   Task: Package 3-5 predefined hypergraph example JSON files as assets and implement loading them (F1.7) - [Owner TBD]
--   Task: Implement the step-by-step simulation loop logic (match, select, apply) (F1.5) - [Owner TBD]
--   Task: Implement "continuous" simulation mode (F1.5) - [Owner TBD]
--   Task: Define and log/track simulation "events" (application of a rule) for transmission (F1.6) - [Owner TBD]
--   Task: Unit tests for save/load functionality and simulation loop components (F1.5, F1.6, F1.7) - [Owner TBD]
+-   Task: Update Protocol Buffer definitions for new features (F2.2) - [Owner TBD]
+-   Task: Implement gRPC handler for `InitializeSimulation` (F2.1) - [Owner TBD]
+-   Task: Implement gRPC handler for `StepSimulation` (F2.1) - [Owner TBD]
+-   Task: Implement gRPC handler for `RunSimulation` streaming (F2.1) - [Owner TBD]
+-   Task: Implement gRPC handler for `StopSimulation` (F2.1) - [Owner TBD]
+-   Task: Implement gRPC handler for `GetCurrentState` (F2.1) - [Owner TBD]
+-   Task: Implement gRPC handler for `SaveHypergraph` (F2.1) - [Owner TBD]
+-   Task: Implement gRPC handler for `LoadHypergraph` (F2.1) - [Owner TBD]
+-   Task: Integrate gRPC service with simulation engine (F2.3) - [Owner TBD]
+-   Task: Unit tests for gRPC service endpoints (F2.1, F2.2, F2.3) - [Owner TBD]
 
 --- 
 
@@ -117,6 +102,62 @@ This document tracks the current status of development tasks using a Kanban-styl
 --- 
 
 ## Done
+
+**Sprint 3: Simulation Loop, Event Management & Persistence (F1.5, F1.6, F1.7) - Completed June 11, 2025**
+-   Task: Implement step-by-step simulation loop logic (match, select, apply) (F1.5) - [Completed June 11, 2025]
+    - Implemented `SimulationManager` with `step()` method for single-step execution
+    - Implemented `step_multiple()` for executing multiple steps sequentially
+    - Added event selection strategies (FirstRuleFirstMatch, MostMatches)
+    - Created comprehensive simulation state management
+    - Added unit tests for all simulation loop functionality
+-   Task: Implement "continuous" simulation mode (F1.5) - [Completed June 11, 2025]
+    - Implemented `run_continuous()` method with configurable stopping conditions
+    - Added `ContinuousSimulationConfig` for flexible simulation control
+    - Implemented stop reasons (MaxStepsReached, FixedPointReached, ManualStop)
+    - Added comprehensive result tracking with `ContinuousSimulationResult`
+    - Added unit tests for continuous simulation modes
+-   Task: Define and log/track simulation "events" (application of a rule) for transmission (F1.6) - [Completed June 11, 2025]
+    - Implemented `SimulationEvent` struct with comprehensive event tracking
+    - Added event creation with rule ID, created/removed atoms/relations tracking
+    - Implemented `HypergraphState` for complete state transmission
+    - Added event descriptions and metadata support
+    - Added unit tests for event management and state tracking
+-   Task: Implement `serde` serialization for `HypergraphState` to JSON (F1.7) - [Completed June 11, 2025]
+    - Added serde serialization support to all core data structures
+    - Implemented JSON serialization for `HypergraphState` with pretty printing
+    - Added proper error handling for serialization operations
+    - Verified serialization/deserialization consistency through tests
+-   Task: Implement `serde` deserialization for `HypergraphState` from JSON (F1.7) - [Completed June 11, 2025]
+    - Implemented robust JSON deserialization with validation
+    - Added validation for data consistency (atom references, ID consistency)
+    - Implemented proper error reporting for malformed data
+    - Added comprehensive error handling for file operations
+-   Task: Develop logic to save current hypergraph to a user-specified/default file (F1.7) - [Completed June 11, 2025]
+    - Implemented `PersistenceManager` with flexible save functionality
+    - Added automatic filename generation with timestamps
+    - Implemented directory creation and overwrite protection
+    - Added configurable save options (pretty printing, directory creation, overwrite policy)
+    - Added comprehensive unit tests for save functionality
+-   Task: Develop logic to load a hypergraph from a user-selected file, replacing current state (F1.7) - [Completed June 11, 2025]
+    - Implemented robust file loading with validation
+    - Added state replacement functionality in `SimulationManager`
+    - Implemented `from_state()` constructor for creating managers from saved states
+    - Added comprehensive error handling and validation
+    - Added unit tests for load functionality and state management
+-   Task: Package 3-5 predefined hypergraph example JSON files as assets and implement loading them (F1.7) - [Completed June 11, 2025]
+    - Implemented `PredefinedExamples` with 5 example hypergraphs
+    - Created examples: empty_graph, single_edge, triangle, small_path, small_cycle
+    - Added comprehensive descriptions and metadata for each example
+    - Implemented validation system for all predefined examples
+    - Added `ExampleInfo` for detailed example information
+    - Added comprehensive unit tests for all predefined examples
+-   Task: Unit tests for simulation loop components and save/load functionality (F1.5, F1.6, F1.7) - [Completed June 11, 2025]
+    - Added 26 new comprehensive unit tests (total now 72 tests)
+    - Tests cover simulation step execution, continuous simulation, event tracking
+    - Tests cover persistence operations, validation, and error handling
+    - Tests cover predefined examples and state management
+    - All tests pass, demonstrating robust implementation
+    - Added integration tests demonstrating end-to-end functionality
 
 **Sprint 2: Basic Pattern Matching & Rewriting Tasks (F1.3, F1.4)**
 -   Task: Develop basic sub-hypergraph isomorphism algorithm for pattern matching (F1.3) - [Completed June 11, 2025]
@@ -192,4 +233,7 @@ This document tracks the current status of development tasks using a Kanban-styl
 
 ## Notes
 -   Tasks are derived from `06-developmentPlan.md`.
--   [Owner TBD] and [Est. TBD] to be filled as sprint planning occurs for Sprint 1 onwards.
+-   [Owner TBD] and [Est. TBD] to be filled as sprint planning occurs for Sprint 4 onwards.
+-   Sprint 3 successfully completed all simulation engine core features (F1.5-F1.7)
+-   Total test count increased from 46 to 72 tests with Sprint 3 completion
+-   Next focus: Sprint 4 (gRPC Service Implementation)

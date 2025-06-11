@@ -6,9 +6,13 @@ pub mod hypergraph;
 pub mod rules;
 pub mod matching;
 pub mod evolution;
+pub mod simulation;
+pub mod serialization;
 
 pub use hypergraph::*;
 pub use rules::*;
+pub use simulation::*;
+pub use serialization::*;
 
 // For gRPC service generation
 pub mod wolfram_physics_simulator {

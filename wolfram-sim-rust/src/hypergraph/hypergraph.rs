@@ -299,6 +299,28 @@ impl Hypergraph {
         self.relations.contains_key(&relation_id)
     }
     
+    /// Returns all atoms in the hypergraph as a vector.
+    /// This is useful for serialization and state management.
+    pub fn get_all_atoms(&self) -> Vec<Atom> {
+        self.atoms.values().cloned().collect()
+    }
+    
+    /// Returns all relations in the hypergraph as a vector.
+    /// This is useful for serialization and state management.
+    pub fn get_all_relations(&self) -> Vec<Relation> {
+        self.relations.values().cloned().collect()
+    }
+    
+    /// Returns the next atom ID that will be assigned.
+    pub fn next_atom_id(&self) -> u64 {
+        self.next_atom_id
+    }
+    
+    /// Returns the next relation ID that will be assigned.
+    pub fn next_relation_id(&self) -> u64 {
+        self.next_relation_id
+    }
+    
     /// Clears all atoms and relations from the hypergraph.
     pub fn clear(&mut self) {
         self.atoms.clear();

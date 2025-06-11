@@ -1,12 +1,27 @@
 # Changelog
 
-**Last Updated:** June 11, 2025 (Sprint 2 Completion)
+**Last Updated:** June 11, 2025 (Sprint 3 Completion)
 
 This document tracks significant changes to the project in chronological order, with the most recent entries at the top.
 
 ## [Unreleased] - MVP Development
 
 ### Added
+- **Sprint 3: Simulation Loop, Event Management & Persistence Implementation (2025-06-11):**
+    - Implemented complete simulation loop logic with step-by-step and continuous execution modes (F1.5)
+    - Created `SimulationManager` with comprehensive state management and event selection strategies
+    - Added `step()`, `step_multiple()`, and `run_continuous()` methods for flexible simulation control
+    - Implemented `ContinuousSimulationConfig` with configurable stopping conditions and progress reporting
+    - Created comprehensive event management system with `SimulationEvent` and `HypergraphState` (F1.6)
+    - Added detailed event tracking including rule application, atom/relation creation/removal
+    - Implemented complete hypergraph persistence system with JSON serialization/deserialization (F1.7)
+    - Created `PersistenceManager` with robust save/load functionality, validation, and error handling
+    - Implemented predefined examples system with 5 example hypergraphs for testing and demonstration
+    - Added `PredefinedExamples` with empty_graph, single_edge, triangle, small_path, and small_cycle
+    - Enhanced `Hypergraph` with additional methods for state management and serialization
+    - Added comprehensive test coverage with 26 new tests (total 72 tests) covering all Sprint 3 features
+    - Created full integration demonstration showing end-to-end functionality of all implemented features
+    - All Sprint 3 deliverables completed successfully with extensive validation and testing
 - **Sprint 2: Pattern Matching & Rewriting Implementation (2025-06-11):**
     - Implemented complete sub-hypergraph isomorphism algorithm for pattern matching (F1.3)
     - Created `matching/isomorphism.rs` module with `PatternMatch` struct and `find_pattern_matches` function
@@ -164,6 +179,17 @@ This document tracks significant changes to the project in chronological order, 
 - [Removed functionality]
 
 ## Project Milestones
+
+### Sprint 3 Completion: Simulation Loop, Event Management & Persistence - 2025-06-11
+- Successfully implemented complete simulation loop logic with both step-by-step and continuous execution (F1.5)
+- Completed comprehensive event management system for tracking rule applications and state changes (F1.6)
+- Implemented full hypergraph persistence with JSON serialization, save/load functionality, and predefined examples (F1.7)
+- Added robust `SimulationManager` with configurable event selection strategies and state management
+- Created `PersistenceManager` with validation, error handling, and file management capabilities
+- Implemented 5 predefined hypergraph examples for testing and demonstration purposes
+- Added 26 new comprehensive unit tests (total 72 tests) with 100% pass rate
+- Created full integration demonstration showcasing all Sprint 3 features working together
+- Sprint 3 fully complete and ready for Sprint 4 (gRPC Service Implementation)
 
 ### Sprint 2 Completion: Pattern Matching & Rewriting - 2025-06-11
 - Successfully implemented sub-hypergraph isomorphism algorithm for pattern matching (F1.3)
