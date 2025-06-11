@@ -51,6 +51,7 @@ impl Default for SaveConfig {
 }
 
 /// Main persistence manager for hypergraph states.
+#[derive(Debug)]
 pub struct PersistenceManager {
     /// Default directory for saving hypergraphs
     default_save_directory: PathBuf,

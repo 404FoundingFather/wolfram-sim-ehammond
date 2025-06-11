@@ -9,6 +9,9 @@ service WolframPhysicsSimulatorService {
   rpc RunSimulation(RunRequest) returns (stream SimulationStateUpdate);
   rpc StopSimulation(StopRequest) returns (StopResponse);
   rpc GetCurrentState(GetCurrentStateRequest) returns (SimulationStateUpdate);
+  // NEW RPCs from Sprint 3
+  rpc SaveHypergraph(SaveHypergraphRequest) returns (SaveHypergraphResponse);
+  rpc LoadHypergraph(LoadHypergraphRequest) returns (LoadHypergraphResponse);
 }
 
 // Message Definitions (F2.2)
@@ -25,6 +28,9 @@ message Relation {
 message HypergraphState {
   repeated Atom atoms = 1;
   repeated Relation relations = 2;
+  int64 step_number = 3;
+  uint64 next_atom_id = 4;
+  uint64 next_relation_id = 5;
 }
 
 message SimulationEvent {
@@ -32,7 +38,11 @@ message SimulationEvent {
   string rule_id_applied = 2;
   repeated string atoms_involved_input = 3;
   repeated string atoms_involved_output = 4;
-  // (simplified for MVP)
+  int64 step_number = 5;
+  repeated string atoms_created = 6;
+  repeated string relations_created = 7;
+  repeated string relations_removed = 8;
+  string description = 9;
 }
 
 // RPC Request and Response Messages
@@ -59,10 +69,14 @@ message StepResponse {
   HypergraphState new_hypergraph_state = 1;
   repeated SimulationEvent events_occurred = 2;
   int64 current_step_number = 3;
+  bool success = 4;
+  string message = 5;
 }
 
 message RunRequest {
   int32 update_interval_ms = 1; // Optional: delay between updates in milliseconds
+  optional int64 max_steps = 2; // Optional: maximum steps to run
+  bool stop_on_fixed_point = 3; // Whether to stop when no more rules can be applied
 }
 
 // SimulationStateUpdate is used for RunSimulation stream and GetCurrentState
@@ -70,6 +84,8 @@ message SimulationStateUpdate {
   HypergraphState current_graph = 1;
   repeated SimulationEvent recent_events = 2;
   int64 step_number = 3;
+  bool is_running = 4; // Whether simulation is currently running
+  string status_message = 5; // Status or error message
 }
 
 message StopRequest {
@@ -79,10 +95,53 @@ message StopRequest {
 message StopResponse {
   bool success = 1;
   string message = 2; // e.g., "Simulation stopped"
+  HypergraphState final_state = 3;
 }
 
 message GetCurrentStateRequest {
   // (Empty for MVP)
 }
 
-// GetCurrentState returns SimulationStateUpdate 
+// NEW Messages for Save/Load functionality (Sprint 3)
+
+message SaveHypergraphRequest {
+  optional string filename = 1; // Optional: custom filename, will generate if not provided
+  bool overwrite_existing = 2; // Whether to overwrite if file exists
+  bool pretty_print = 3; // Whether to format JSON with pretty printing
+}
+
+message SaveHypergraphResponse {
+  bool success = 1;
+  string message = 2; // Success message or error description
+  string file_path = 3; // Full path where the file was saved
+}
+
+message LoadHypergraphRequest {
+  oneof source {
+    string predefined_example_name = 1; // Load from predefined examples
+    string file_content = 2; // JSON content of hypergraph to load
+    string file_path = 3; // Path to file to load (server-side file)
+  }
+}
+
+message LoadHypergraphResponse {
+  bool success = 1;
+  string message = 2; // Success message or error description
+  HypergraphState loaded_state = 3; // The loaded hypergraph state
+}
+
+// NEW Message for listing predefined examples
+message ListPredefinedExamplesRequest {
+  // (Empty)
+}
+
+message PredefinedExampleInfo {
+  string name = 1;
+  string description = 2;
+  int32 atom_count = 3;
+  int32 relation_count = 4;
+}
+
+message ListPredefinedExamplesResponse {
+  repeated PredefinedExampleInfo examples = 1;
+} 
