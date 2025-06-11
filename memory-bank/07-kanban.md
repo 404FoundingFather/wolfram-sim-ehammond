@@ -1,6 +1,6 @@
 # Project Progress (Kanban Board)
 
-**Last Updated:** May 16, 2025
+**Last Updated:** June 11, 2025 (Sprint 2 Completion)
 
 This document tracks the current status of development tasks using a Kanban-style board. Items are moved based on the Development Plan (`06-developmentPlan.md`).
 
@@ -74,14 +74,19 @@ This document tracks the current status of development tasks using a Kanban-styl
 
 --- 
 
-## To Do (Sprint 2: Basic Pattern Matching & Rewriting - F1.3, F1.4)
-**Goal:** Implement initial logic for finding rule matches and applying rewrites.
-**Dependencies:** Sprint 1 completion.
+## To Do (Sprint 3: Simulation Loop & Event Management - F1.5, F1.6, F1.7)
+**Goal:** Implement simulation step management, event tracking, and hypergraph persistence.
+**Dependencies:** Sprint 2 completion.
 
--   Task: Develop basic sub-hypergraph isomorphism algorithm for pattern matching (F1.3) - [Owner TBD]
--   Task: Implement variable binding and substitution logic (F1.3) - [Owner TBD]
--   Task: Implement the hypergraph rewriting process (remove old, add new) (F1.4) - [Owner TBD]
--   Task: Unit tests for matching and rewriting simple cases (F1.3, F1.4) - [Owner TBD]
+-   Task: Implement step-by-step simulation loop logic (match, select, apply) (F1.5) - [Owner TBD]
+-   Task: Implement "continuous" simulation mode (F1.5) - [Owner TBD]
+-   Task: Define and log/track simulation "events" (application of a rule) for transmission (F1.6) - [Owner TBD]
+-   Task: Implement `serde` serialization for `HypergraphState` to JSON (F1.7) - [Owner TBD]
+-   Task: Implement `serde` deserialization for `HypergraphState` from JSON (F1.7) - [Owner TBD]
+-   Task: Develop logic to save current hypergraph to a user-specified/default file (F1.7) - [Owner TBD]
+-   Task: Develop logic to load a hypergraph from a user-selected file, replacing current state (F1.7) - [Owner TBD]
+-   Task: Package 3-5 predefined hypergraph example JSON files as assets and implement loading them (F1.7) - [Owner TBD]
+-   Task: Unit tests for simulation loop components and save/load functionality (F1.5, F1.6, F1.7) - [Owner TBD]
 
 --- 
 
@@ -113,32 +118,58 @@ This document tracks the current status of development tasks using a Kanban-styl
 
 ## Done
 
+**Sprint 2: Basic Pattern Matching & Rewriting Tasks (F1.3, F1.4)**
+-   Task: Develop basic sub-hypergraph isomorphism algorithm for pattern matching (F1.3) - [Completed June 11, 2025]
+    - Implemented `PatternMatch` struct to represent match results with variable bindings
+    - Implemented `find_pattern_matches` function using backtracking search algorithm
+    - Added support for matching patterns with both concrete atoms and variables
+    - Implemented comprehensive pattern matching that finds all valid matches
+    - Added unit tests for various matching scenarios including empty patterns, variable matches, and concrete atom matches
+-   Task: Implement variable binding and substitution logic (F1.3) - [Completed June 11, 2025]
+    - Enhanced `Binding` struct to support pattern variable binding during matching
+    - Implemented proper variable conflict detection and resolution
+    - Added logic to bind pattern variables to actual hypergraph atoms
+    - Implemented variable substitution for rule application
+    - Added comprehensive unit tests for binding consistency and merging
+-   Task: Implement the hypergraph rewriting process (remove old, add new) (F1.4) - [Completed June 11, 2025]
+    - Implemented `apply_rule` function for rewriting hypergraphs based on pattern matches
+    - Created `RewriteResult` struct to track rewrite outcomes and changes
+    - Added logic to remove matched pattern elements and add replacement elements
+    - Implemented automatic creation of new atoms for unbound variables in replacements
+    - Added `apply_first_available_rule` convenience function
+    - Added comprehensive unit tests including end-to-end integration tests
+-   Task: Unit tests for matching and rewriting simple cases (F1.3, F1.4) - [Completed June 11, 2025]
+    - Implemented comprehensive test coverage with 46 passing tests
+    - Added end-to-end integration test demonstrating complete workflow
+    - Verified classic edge splitting rule: {{x,y}} -> {{x,z},{z,y}}
+    - All tests pass successfully demonstrating correct implementation
+
 **Sprint 1: Core Hypergraph & Rule Representation Tasks (F1.1, F1.2)**
--   Task: Define `Rule` struct (pattern hypergraph, replacement hypergraph) (F1.2) - [Completed May 16, 2025]
+-   Task: Define `Rule` struct (pattern hypergraph, replacement hypergraph) (F1.2) - [Completed June 10, 2025]
     - Implemented `RuleId` type with appropriate methods
     - Implemented `Rule` struct with pattern and replacement fields
     - Added methods for creating, querying, and manipulating rules
     - Added implementation for the classic {{x,y}} -> {{x,z},{z,y}} edge splitting rule
     - Implemented `RuleSet` for managing collections of rules
     - Added comprehensive unit tests for all functionality
--   Task: Implement storage for a set of hardcoded rules (e.g., `{{x,y}} -> {{x,z},{z,y}}`) (F1.2) - [Completed May 16, 2025]
+-   Task: Implement storage for a set of hardcoded rules (e.g., `{{x,y}} -> {{x,z},{z,y}}`) (F1.2) - [Completed June 10, 2025]
     - Implemented `RuleSet` that can store and manage multiple rules
     - Added methods for adding, querying, and iterating over rules
     - Implemented `create_basic_ruleset()` that creates a set with the basic edge splitting rule
     - Added unit tests for rule storage functionality
--   Task: Implement core `Hypergraph` struct with methods for add/remove, basic queries (F1.1) - [Completed May 16, 2025]
+-   Task: Implement core `Hypergraph` struct with methods for add/remove, basic queries (F1.1) - [Completed June 10, 2025]
     - Implemented `Hypergraph` struct with core data storage using HashMaps for atoms and relations
     - Added indexed lookup from atoms to relations for efficient querying
     - Implemented methods for adding/removing atoms and relations, with proper cross-reference management
     - Added query methods like find_relations_with_atom, atom_count, relation_count, etc.
     - Added ID generation for atoms and relations
     - Added comprehensive unit tests for all functionality
--   Task: Design and implement `Relation` (hyperedge) representation (e.g., `Vec<AtomId>`) (F1.1) - [Completed May 15, 2025]
+-   Task: Design and implement `Relation` (hyperedge) representation (e.g., `Vec<AtomId>`) (F1.1) - [Completed June 9, 2025]
     - Implemented `RelationId` as a newtype wrapper around `u64` with serialization support
     - Implemented `Relation` struct with ID, ordered collection of AtomIds, and optional metadata
     - Added methods for creating and querying relations (arity, contains_atom, etc.)
     - Added comprehensive unit tests for all functionality
--   Task: Define and implement `AtomId` type and `Atom` struct/metadata (F1.1) - [Completed May 15, 2025]
+-   Task: Define and implement `AtomId` type and `Atom` struct/metadata (F1.1) - [Completed June 9, 2025]
     - Implemented `AtomId` as a newtype wrapper around `u64` with serialization support
     - Implemented `Atom` struct with ID and optional metadata
     - Added comprehensive unit tests for all functionality

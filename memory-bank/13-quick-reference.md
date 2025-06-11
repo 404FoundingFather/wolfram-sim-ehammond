@@ -1,6 +1,6 @@
 # 13. Quick Reference Guide from PRD
 
-**Last Updated:** May 14, 2025
+**Last Updated:** June 11, 2025 (Sprint 2 Completion)
 
 This guide provides a quick lookup for key terms, features, and identifiers from the Wolfram Physics Simulator MVP PRD.
 
@@ -23,13 +23,13 @@ This guide provides a quick lookup for key terms, features, and identifiers from
 
 ## Backend Features (Rust Simulation Engine - F1.x)
 
--   **Hypergraph Representation (F1.1)**: Atoms (nodes) and Relations (hyperedges - ordered lists of atoms).
--   **Rewrite Rules (F1.2)**: Hardcoded/predefined (e.g., `{{x,y}} -> {{x,z}, {z,y}}`).
--   **Pattern Matching (F1.3)**: Basic sub-hypergraph isomorphism.
--   **Hypergraph Rewriting (F1.4)**: Applying matched rules.
--   **Simulation Loop (F1.5)**: Step-by-step or continuous evolution.
--   **Event Management (F1.6)**: Identifying update events, serializing state.
--   **Hypergraph Persistence (F1.7)**: Save/load hypergraph state from/to files (JSON for MVP), including predefined examples.
+-   **Hypergraph Representation (F1.1)**: ✅ IMPLEMENTED - Atoms (nodes) and Relations (hyperedges - ordered lists of atoms).
+-   **Rewrite Rules (F1.2)**: ✅ IMPLEMENTED - Hardcoded/predefined (e.g., `{{x,y}} -> {{x,z}, {z,y}}`).
+-   **Pattern Matching (F1.3)**: ✅ IMPLEMENTED - Basic sub-hypergraph isomorphism with backtracking search.
+-   **Hypergraph Rewriting (F1.4)**: ✅ IMPLEMENTED - Applying matched rules with variable binding and substitution.
+-   **Simulation Loop (F1.5)**: Step-by-step or continuous evolution. [Next: Sprint 3]
+-   **Event Management (F1.6)**: Identifying update events, serializing state. [Next: Sprint 3]
+-   **Hypergraph Persistence (F1.7)**: Save/load hypergraph state from/to files (JSON for MVP), including predefined examples. [Next: Sprint 3]
 
 ## gRPC API Endpoints (F2.1)
 
@@ -67,14 +67,14 @@ This guide provides a quick lookup for key terms, features, and identifiers from
 -   High-performance matching for very large graphs.
 -   Mobile responsiveness.
 
-## Key Backend Modules (Illustrative, within `wolfram_engine_core`)
+## Key Backend Modules (Implemented in `wolfram-sim-rust`)
 
--   `hypergraph`: Data structures for atoms, relations, hypergraph.
--   `rules`: Rule definition, pattern representation.
--   `matching`: Sub-hypergraph isomorphism logic.
--   `evolution`: Rewriting logic, event scheduling/selection.
--   `simulation`: Main simulation loop, state management.
--   `serialization`: State saving/loading logic (e.g., via `serde` for F1.7 hypergraph persistence; Protobufs for F1.6 gRPC state transmission).
+-   `hypergraph`: ✅ IMPLEMENTED - Data structures for atoms, relations, hypergraph.
+-   `rules`: ✅ IMPLEMENTED - Rule definition, pattern representation.
+-   `matching`: ✅ IMPLEMENTED - Sub-hypergraph isomorphism logic.
+-   `evolution`: ✅ IMPLEMENTED - Rewriting logic, event scheduling/selection.
+-   `simulation`: Main simulation loop, state management. [Next: Sprint 3]
+-   `serialization`: State saving/loading logic (e.g., via `serde` for F1.7 hypergraph persistence; Protobufs for F1.6 gRPC state transmission). [Next: Sprint 3]
 
 ## Technical Choices (Section 6 - Design and Technical Considerations)
 

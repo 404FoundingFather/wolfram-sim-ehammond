@@ -34,15 +34,15 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
         *   `hypergraph/relation.rs`: `RelationId` and `Relation` implementations
         *   `hypergraph/hypergraph.rs`: Main `Hypergraph` container with methods for adding/removing atoms and relations, querying, and ID generation
         *   `hypergraph/mod.rs`: Module exports and structure
-*   **Rule Engine:** ✅ PARTIALLY IMPLEMENTED
+*   **Rule Engine:** ✅ IMPLEMENTED
     *   **Purpose:** To define, store, match, and apply rewrite rules.
-    *   **Implementation:** Implemented `Rule` struct (pattern and replacement hypergraphs), `Variable` for pattern matching, and `Binding` for variable substitution. The `RuleSet` allows managing collections of rules, including a default `create_basic_ruleset()` method with the classic edge-splitting rule (`{{x,y}} -> {{x,z},{z,y}}`).
+    *   **Implementation:** Fully implemented `Rule` struct (pattern and replacement hypergraphs), `Variable` for pattern matching, and `Binding` for variable substitution. The `RuleSet` allows managing collections of rules, including a default `create_basic_ruleset()` method with the classic edge-splitting rule (`{{x,y}} -> {{x,z},{z,y}}`). Complete pattern matching using sub-hypergraph isomorphism and rewriting logic.
     *   **Key Classes/Components:** Implemented within `wolfram-sim-rust`:
         *   `rules/rule.rs`: `RuleId`, `Rule`, and `RuleSet` implementations
         *   `rules/pattern.rs`: `Pattern`, `PatternRelation`, `PatternElement`, `Variable`, and `Binding` implementations
         *   `rules/mod.rs`: Module exports and structure
-        *   `matching/isomorphism.rs`: Pattern matching logic (to be implemented)
-        *   `evolution/rewriter.rs`: Apply rewrites (to be implemented)
+        *   `matching/isomorphism.rs`: Pattern matching logic with `PatternMatch` and `find_pattern_matches` ✅ IMPLEMENTED
+        *   `evolution/rewriter.rs`: Apply rewrites with `RewriteResult` and `apply_rule` ✅ IMPLEMENTED
 *   **Stateful Simulation Loop & Event Management:**
     *   **Purpose:** To manage the evolution of the hypergraph over discrete steps or continuous updates, including event selection.
     *   **Implementation:** The engine maintains a "current state" of the hypergraph. Rule application modifies this state. Event selection logic (e.g., deterministic for MVP) chooses which match to apply.
@@ -98,10 +98,16 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 │   │   │   ├── atom.rs    // Atom and AtomId implementations
 │   │   │   ├── relation.rs // Relation and RelationId implementations
 │   │   │   └── hypergraph.rs // Hypergraph container implementation
-│   │   └── rules/         // Rule engine data structures
+│   │   ├── rules/         // Rule engine data structures
+│   │   │   ├── mod.rs     // Module definitions
+│   │   │   ├── pattern.rs // Pattern, Variable, and Binding implementations
+│   │   │   └── rule.rs    // Rule and RuleSet implementations
+│   │   ├── matching/      // Pattern matching algorithms
+│   │   │   ├── mod.rs     // Module definitions
+│   │   │   └── isomorphism.rs // Sub-hypergraph isomorphism implementation
+│   │   └── evolution/     // Hypergraph rewriting logic
 │   │       ├── mod.rs     // Module definitions
-│   │       ├── pattern.rs // Pattern, Variable, and Binding implementations
-│   │       └── rule.rs    // Rule and RuleSet implementations
+│   │       └── rewriter.rs // Rule application and rewriting implementation
 │   ├── Cargo.toml         // Rust dependencies
 │   └── Cargo.lock         // Locked dependencies
 ├── wolfram-sim-frontend/   // React TypeScript frontend

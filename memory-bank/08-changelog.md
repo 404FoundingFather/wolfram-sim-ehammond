@@ -1,13 +1,24 @@
 # Changelog
 
-**Last Updated:** May 16, 2025
+**Last Updated:** June 11, 2025 (Sprint 2 Completion)
 
 This document tracks significant changes to the project in chronological order, with the most recent entries at the top.
 
 ## [Unreleased] - MVP Development
 
 ### Added
-- **Sprint 1: Rule & Pattern Implementation (2025-05-16):**
+- **Sprint 2: Pattern Matching & Rewriting Implementation (2025-06-11):**
+    - Implemented complete sub-hypergraph isomorphism algorithm for pattern matching (F1.3)
+    - Created `matching/isomorphism.rs` module with `PatternMatch` struct and `find_pattern_matches` function
+    - Added backtracking search algorithm that handles both concrete atoms and variables in patterns
+    - Implemented comprehensive variable binding and substitution logic for rule application
+    - Created `evolution/rewriter.rs` module with `apply_rule` function and `RewriteResult` struct
+    - Added automatic creation of new atoms for unbound variables in rule replacements
+    - Implemented `apply_first_available_rule` convenience function for easy rule application
+    - Added end-to-end integration test demonstrating complete edge splitting workflow
+    - All 46 unit tests pass, confirming correct implementation of F1.3 and F1.4
+
+- **Sprint 1: Rule & Pattern Implementation (2025-06-10):**
     - Implemented `RuleId` type with appropriate methods for unique identification
     - Implemented `Rule` struct for representing hypergraph rewrite rules with pattern and replacement
     - Created `Pattern`, `PatternRelation`, and `PatternElement` types to support rule definitions
@@ -16,7 +27,7 @@ This document tracks significant changes to the project in chronological order, 
     - Implemented the classic {{x,y}} -> {{x,z},{z,y}} edge splitting rule
     - Added comprehensive unit tests for rule and pattern functionality
 
-- **Sprint 1: Core Hypergraph Implementation (2025-05-16):**
+- **Sprint 1: Core Hypergraph Implementation (2025-06-10):**
     - Implemented `Hypergraph` struct with efficient data structures for atoms and relations
     - Created indexed lookup from atoms to relations for improved query performance
     - Added methods for adding/removing atoms and relations with proper cross-reference maintenance
@@ -24,7 +35,7 @@ This document tracks significant changes to the project in chronological order, 
     - Implemented ID generation for both atoms and relations
     - Added comprehensive unit tests for all `Hypergraph` functionality
 
-- **Sprint 1: Core Hypergraph Implementation (2025-05-15):**
+- **Sprint 1: Core Hypergraph Implementation (2025-06-09):**
     - Implemented `RelationId` type as a newtype pattern around `u64` with serialization support
     - Implemented `Relation` struct with ID, ordered collection of AtomIds, and optional metadata
     - Added methods for relation operations including arity and atom containment checks
@@ -154,19 +165,26 @@ This document tracks significant changes to the project in chronological order, 
 
 ## Project Milestones
 
-### Sprint 1 Completion: Rule Structure Implementation - 2025-05-16
+### Sprint 2 Completion: Pattern Matching & Rewriting - 2025-06-11
+- Successfully implemented sub-hypergraph isomorphism algorithm for pattern matching (F1.3)
+- Completed hypergraph rewriting logic with proper variable binding and substitution (F1.4)
+- Created comprehensive test suite with 46 passing tests including end-to-end integration
+- Demonstrated working edge splitting rule: {{A,B}} -> {{A,Z},{Z,B}}
+- Sprint 2 fully complete and ready for Sprint 3 (Simulation Loop & Event Management)
+
+### Sprint 1 Completion: Rule Structure Implementation - 2025-06-10
 - Implemented the Rule and Pattern types required for rewrite rules
 - Created a working RuleSet with the classic edge splitting rule
 - Added comprehensive support for pattern variables and bindings
 - Sprint 1 is nearly complete; only remaining task is comprehensive unit testing
 
-### Sprint 1 Continued: Core Hypergraph Implementation - 2025-05-16
+### Sprint 1 Continued: Core Hypergraph Implementation - 2025-06-10
 - Completed the `Hypergraph` implementation with efficient data structures and comprehensive API
 - Implemented relation indexing for optimized queries
 - All unit tests are passing for the core hypergraph data structures
 - 3 out of 4 Sprint 1 tasks now completed
 
-### Sprint 1 Start: Core Hypergraph Implementation - 2025-05-15
+### Sprint 1 Start: Core Hypergraph Implementation - 2025-06-09
 - Started implementation of core Rust data structures for the simulation engine
 - Completed the `AtomId` and `Atom` implementations with serialization support
 - Set up the project structure for future development
