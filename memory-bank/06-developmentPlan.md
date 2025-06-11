@@ -1,6 +1,6 @@
 # Development Plan
 
-**Last Updated:** May 14, 2025
+**Last Updated:** June 11, 2025
 
 This document outlines the strategic development plan for the Wolfram Physics Simulator MVP. It details the project phases, key deliverables, technical approaches, and risk management, reflecting a focus on robust design and iterative implementation.
 
@@ -145,23 +145,26 @@ The MVP is structured into three primary phases:
 *   **Dependencies:** Sprint 1 completion.
 *   **Owner/Est:** [TBD]
 
-**Sprint 3 (Example - Could be merged or reordered): Hypergraph Persistence & Simulation Loop Refinements (Focus: F1.7, F1.5, F1.6)**
-*   **Timeline:** [Start Date] - [End Date]
-*   **Goal:** Implement save/load for hypergraphs and refine simulation step/event logic.
-*   **Tasks:**
-    1.  Implement `serde` serialization for `HypergraphState` to JSON (F1.7).
-    2.  Implement `serde` deserialization for `HypergraphState` from JSON (F1.7).
-    3.  Develop logic to save current hypergraph to a user-specified/default file (F1.7).
-    4.  Develop logic to load a hypergraph from a user-selected file, replacing current state (F1.7).
-    5.  Package 3-5 predefined hypergraph example JSON files as assets and implement loading them (F1.7).
-    6.  Implement the step-by-step simulation loop logic (match, select, apply) (F1.5).
-    7.  Implement "continuous" simulation mode (F1.5).
-    8.  Define and log/track simulation "events" (application of a rule) for transmission (F1.6).
-    9.  Unit tests for save/load functionality and simulation loop components.
-*   **Dependencies:** Sprint 1 & 2 completion.
-*   **Owner/Est:** [TBD]
+**Sprint 3: Simulation Loop, Event Management & Persistence (Focus: F1.5, F1.6, F1.7) - ✅ COMPLETED June 11, 2025**
+*   **Timeline:** June 11, 2025 (completed)
+*   **Goal:** Implement simulation step management, event tracking, and hypergraph persistence.
+*   **Completed Tasks:**
+    1.  ✅ Implemented `serde` serialization for `HypergraphState` to JSON (F1.7).
+    2.  ✅ Implemented `serde` deserialization for `HypergraphState` from JSON (F1.7).
+    3.  ✅ Developed `PersistenceManager` for saving hypergraphs to user-specified/default files (F1.7).
+    4.  ✅ Developed logic to load hypergraphs from files, replacing current state (F1.7).
+    5.  ✅ Created 5 predefined hypergraph examples as built-in assets (F1.7).
+    6.  ✅ Implemented `SimulationManager` with step-by-step simulation loop logic (F1.5).
+    7.  ✅ Implemented continuous simulation mode with configurable stopping conditions (F1.5).
+    8.  ✅ Defined and implemented comprehensive simulation event tracking (F1.6).
+    9.  ✅ Added 26 new unit tests for save/load functionality and simulation loop components.
+*   **Achievements:** 72 total tests passing, comprehensive simulation engine core completed.
+*   **Dependencies:** Sprint 1 & 2 completion. ✅ Met
+*   **Next:** Ready for Sprint 4 (gRPC Service Implementation)
 
-*(Sprints for Phase 2 gRPC and Phase 3 Frontend will need to incorporate tasks for the new Save/Load Hypergraph features)*
+**Sprint 4: gRPC Service Implementation (Focus: F2.1, F2.2, F2.3) - 📋 PLANNED**
+*   **Goal:** Expose simulation engine capabilities via gRPC API for frontend integration.
+*   **Dependencies:** Sprint 3 completion. ✅ Met
 
 ## 4. Development Workflow & QA
 

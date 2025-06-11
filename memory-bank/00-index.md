@@ -1,6 +1,6 @@
 # Memory-Bank Index
 
-**Last Updated:** May 16, 2025
+**Last Updated:** June 11, 2025
 
 This index serves as the central navigation hub for project documentation. When starting a new AI session, reading these files in the order presented will provide the most efficient onboarding experience.
 

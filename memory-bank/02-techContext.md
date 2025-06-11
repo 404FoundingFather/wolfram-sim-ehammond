@@ -1,6 +1,6 @@
 # Technical Context
 
-**Last Updated:** May 14, 2025
+**Last Updated:** June 11, 2025
 
 This document outlines the technical stack, dependencies, and development environment for the project.
 
@@ -17,6 +17,9 @@ This document outlines the technical stack, dependencies, and development enviro
 *   Tonic-web: For gRPC-Web compatibility.
 *   Protocol Buffers: For defining gRPC messages.
 *   Serde: For serialization and deserialization of Rust data structures (e.g., for state saving).
+*   Chrono: For timestamps in file naming and date handling.
+*   Thiserror: For structured error handling across the application.
+*   Tempfile: For temporary directories and files in testing (dev dependency).
 
 ### Database
 *   N/A for MVP (State managed in memory by the Rust engine).

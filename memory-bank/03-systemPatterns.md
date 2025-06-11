@@ -1,6 +1,6 @@
 # System Patterns
 
-**Last Updated:** May 16, 2025
+**Last Updated:** June 11, 2025
 
 This document describes the architecture, design patterns, and code organization principles used in the Wolfram Physics Simulator MVP.
 
@@ -43,16 +43,20 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
         *   `rules/mod.rs`: Module exports and structure
         *   `matching/isomorphism.rs`: Pattern matching logic with `PatternMatch` and `find_pattern_matches` ✅ IMPLEMENTED
         *   `evolution/rewriter.rs`: Apply rewrites with `RewriteResult` and `apply_rule` ✅ IMPLEMENTED
-*   **Stateful Simulation Loop & Event Management:**
+*   **Stateful Simulation Loop & Event Management:** ✅ IMPLEMENTED
     *   **Purpose:** To manage the evolution of the hypergraph over discrete steps or continuous updates, including event selection.
-    *   **Implementation:** The engine maintains a "current state" of the hypergraph. Rule application modifies this state. Event selection logic (e.g., deterministic for MVP) chooses which match to apply.
-    *   **Key Classes/Components:** Modules to be implemented within `wolfram-sim-rust`:
-        *   `simulation/mod.rs` or `simulation/manager.rs` (main simulation loop, to be implemented)
-        *   `evolution/scheduler.rs` (for event selection if complex, to be implemented)
-*   **State Serialization:**
-    *   **Purpose:** Primarily for **F1.7 Hypergraph Persistence**: to save the current `HypergraphState` to a file (e.g., JSON) and load a `HypergraphState` from a file. This allows users to persist and resume simulations or work with predefined examples. Also supports **F1.6 Event Management & State Transmission** by ensuring the hypergraph state can be structured for gRPC messages, though the direct serialization for gRPC is handled by Protobuf mechanisms.
-    *   **Implementation:** Using `serde` for serialization/deserialization to/from file formats like JSON (for MVP).
-    *   **Key Classes/Components:** Module to be implemented within `wolfram-sim-rust` (e.g., `serialization/mod.rs`) will contain logic for file I/O and `serde` integration for F1.7.
+    *   **Implementation:** Fully implemented `SimulationManager` with step-by-step and continuous execution modes. The engine maintains current hypergraph state, applies rule selection strategies (FirstRuleFirstMatch, MostMatches), and tracks simulation events. Supports configurable continuous simulation with stopping conditions.
+    *   **Key Classes/Components:** Implemented within `wolfram-sim-rust`:
+        *   `simulation/manager.rs`: Main `SimulationManager` with step(), step_multiple(), and run_continuous() methods
+        *   `simulation/event.rs`: `SimulationEvent` and `HypergraphState` for event tracking and state transmission
+        *   `simulation/mod.rs`: Module exports and structure
+*   **State Serialization & Persistence:** ✅ IMPLEMENTED
+    *   **Purpose:** Complete implementation of **F1.7 Hypergraph Persistence**: save/load `HypergraphState` to/from JSON files, with predefined examples and validation. Supports **F1.6 Event Management & State Transmission** with structured state for gRPC messages.
+    *   **Implementation:** Full `PersistenceManager` with robust save/load functionality, error handling, validation, and 5 predefined examples. Uses `serde` for JSON serialization with pretty printing and comprehensive error handling via `thiserror`.
+    *   **Key Classes/Components:** Implemented within `wolfram-sim-rust`:
+        *   `serialization/persistence.rs`: `PersistenceManager` with save/load functionality and validation
+        *   `serialization/examples.rs`: `PredefinedExamples` with 5 built-in hypergraph examples
+        *   `serialization/mod.rs`: Module exports and structure
 *   **In-Memory State Management (MVP):**
     *   **Purpose:** To hold the current simulation state.
     *   **Implementation:** The entire hypergraph is stored in RAM within the Rust process. No database is used for MVP.
@@ -93,22 +97,32 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 │   ├── src/
 │   │   ├── lib.rs         // Library exports
 │   │   ├── main.rs        // Entry point, gRPC server setup
-│   │   ├── hypergraph/    // Hypergraph data structures
+│   │   ├── hypergraph/    // Hypergraph data structures ✅ IMPLEMENTED
 │   │   │   ├── mod.rs     // Module definitions
 │   │   │   ├── atom.rs    // Atom and AtomId implementations
 │   │   │   ├── relation.rs // Relation and RelationId implementations
 │   │   │   └── hypergraph.rs // Hypergraph container implementation
-│   │   ├── rules/         // Rule engine data structures
+│   │   ├── rules/         // Rule engine data structures ✅ IMPLEMENTED
 │   │   │   ├── mod.rs     // Module definitions
 │   │   │   ├── pattern.rs // Pattern, Variable, and Binding implementations
 │   │   │   └── rule.rs    // Rule and RuleSet implementations
-│   │   ├── matching/      // Pattern matching algorithms
+│   │   ├── matching/      // Pattern matching algorithms ✅ IMPLEMENTED
 │   │   │   ├── mod.rs     // Module definitions
 │   │   │   └── isomorphism.rs // Sub-hypergraph isomorphism implementation
-│   │   └── evolution/     // Hypergraph rewriting logic
+│   │   ├── evolution/     // Hypergraph rewriting logic ✅ IMPLEMENTED
+│   │   │   ├── mod.rs     // Module definitions
+│   │   │   └── rewriter.rs // Rule application and rewriting implementation
+│   │   ├── simulation/    // Simulation loop and event management ✅ IMPLEMENTED (NEW)
+│   │   │   ├── mod.rs     // Module definitions
+│   │   │   ├── manager.rs // SimulationManager with step and continuous execution
+│   │   │   └── event.rs   // SimulationEvent and HypergraphState structures
+│   │   └── serialization/ // State persistence and predefined examples ✅ IMPLEMENTED (NEW)
 │   │       ├── mod.rs     // Module definitions
-│   │       └── rewriter.rs // Rule application and rewriting implementation
-│   ├── Cargo.toml         // Rust dependencies
+│   │       ├── persistence.rs // PersistenceManager for save/load functionality
+│   │       └── examples.rs // PredefinedExamples with 5 built-in hypergraphs
+│   ├── examples/          // Example applications and demos (NEW)
+│   │   └── sprint3_demo.rs // Comprehensive demo of all Sprint 3 features
+│   ├── Cargo.toml         // Rust dependencies (updated with new deps)
 │   └── Cargo.lock         // Locked dependencies
 ├── wolfram-sim-frontend/   // React TypeScript frontend
 │   ├── src/
@@ -133,10 +147,15 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 
 ### Module Responsibilities
 *   **`wolfram-sim-rust`**: Contains all Rust backend code including simulation engine logic and gRPC service.
-    *   `src/hypergraph/`: Core data structures for the simulation (atoms, relations, hypergraph container).
-    *   `src/rules/`: Rule engine data structures (rules, patterns, variables, bindings).
+    *   `src/hypergraph/`: Core data structures for the simulation (atoms, relations, hypergraph container). ✅ IMPLEMENTED
+    *   `src/rules/`: Rule engine data structures (rules, patterns, variables, bindings). ✅ IMPLEMENTED
+    *   `src/matching/`: Pattern matching algorithms for sub-hypergraph isomorphism. ✅ IMPLEMENTED
+    *   `src/evolution/`: Hypergraph rewriting logic for applying rules. ✅ IMPLEMENTED
+    *   `src/simulation/`: Simulation loop management, event tracking, and state management. ✅ IMPLEMENTED
+    *   `src/serialization/`: State persistence, save/load functionality, and predefined examples. ✅ IMPLEMENTED
     *   `src/lib.rs`: Exposes the library functionality.
     *   `src/main.rs`: Entry point and gRPC server implementation.
+    *   `examples/`: Demonstration applications showcasing functionality.
 *   **`wolfram-sim-frontend/src`**: Contains all TypeScript SPA frontend code, including React components and gRPC-Web client.
 *   **`proto` (top-level)**: Canonical location for Protocol Buffer definitions.
 
