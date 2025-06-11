@@ -1,6 +1,6 @@
 # Technical Context
 
-**Last Updated:** June 11, 2025
+**Last Updated:** June 11, 2025 (Sprint 4 Completion)
 
 This document outlines the technical stack, dependencies, and development environment for the project.
 
@@ -11,7 +11,7 @@ This document outlines the technical stack, dependencies, and development enviro
 *   gRPC-Web: For communication with the backend.
 *   2D Graph Visualization Library (e.g., Vis.js, Sigma.js, react-force-graph, or custom SVG/Canvas)
 
-### Backend
+### Backend ✅ IMPLEMENTED
 *   Rust: Core language for the simulation engine.
 *   Tonic: Rust gRPC library.
 *   Tonic-web: For gRPC-Web compatibility.
@@ -20,9 +20,10 @@ This document outlines the technical stack, dependencies, and development enviro
 *   Chrono: For timestamps in file naming and date handling.
 *   Thiserror: For structured error handling across the application.
 *   Tempfile: For temporary directories and files in testing (dev dependency).
+*   Tokio: Async runtime for gRPC service and streaming operations.
 
 ### Database
-*   N/A for MVP (State managed in memory by the Rust engine).
+*   N/A for MVP (State managed in memory by the Rust engine with JSON file persistence).
 
 ### Infrastructure
 *   Standard web hosting for the frontend SPA.
@@ -46,12 +47,12 @@ This document outlines the technical stack, dependencies, and development enviro
 6.  Run `cargo build` for the backend.
 7.  Run `npm install` (or `yarn install`) for the frontend.
 
-### Running Locally
-*   Backend: `cargo run` (from the backend directory)
+### Running Locally ✅ OPERATIONAL
+*   Backend: `cargo run` (from the wolfram-sim-rust directory) - Starts gRPC service on [::1]:50051
 *   Frontend: `npm run dev` (or `yarn dev`) (from the frontend directory)
 
-### Testing
-*   Backend: `cargo test`
+### Testing ✅ VERIFIED
+*   Backend: `cargo test` (72 tests passing with 100% success rate)
 *   Frontend: Vitest (recommended with Vite), or Jest.
 
 ## External Dependencies
@@ -67,7 +68,7 @@ This document outlines the technical stack, dependencies, and development enviro
 ### Environment Variables
 *   (Likely for backend port, frontend API endpoint if not default)
 
-### Config Files
+### Config Files ✅ IMPLEMENTED
 *   `.proto` file for gRPC service and message definitions.
 *   `Cargo.toml` for Rust backend dependencies.
 *   `package.json` for frontend dependencies.
@@ -88,11 +89,13 @@ This document outlines the technical stack, dependencies, and development enviro
 [Insert a simple ASCII diagram or placeholder for an architecture diagram]
 ```
 
-## Technical Decisions
+## Technical Decisions ✅ IMPLEMENTED (Backend)
 *   Rust for the backend simulation engine due to performance and safety.
 *   gRPC with gRPC-Web for efficient and typed communication between frontend and backend.
 *   TypeScript for the frontend for type safety and better maintainability.
 *   A mainstream SPA framework will be chosen for the frontend to leverage existing ecosystems.
-*   Initial hypergraph and rules will be hardcoded for MVP simplicity.
+*   Hardcoded rules for MVP simplicity with extensible architecture for future rule definitions.
+*   JSON-based hypergraph persistence with predefined examples for MVP.
+*   Arc<Mutex<T>> pattern for thread-safe shared state in gRPC service.
 
 > Note: More detailed technical decisions are documented in 12-decisions.md

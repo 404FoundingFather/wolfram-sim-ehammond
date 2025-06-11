@@ -1,6 +1,6 @@
 # System Patterns
 
-**Last Updated:** June 11, 2025
+**Last Updated:** June 11, 2025 (Sprint 4 Completion)
 
 This document describes the architecture, design patterns, and code organization principles used in the Wolfram Physics Simulator MVP.
 
@@ -13,7 +13,7 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
 
 ### Core Components
 *   **Rust Simulation Engine:** Manages hypergraph data, applies rewrite rules, and tracks simulation state.
-*   **gRPC Service (Backend):** Exposes simulation engine functionalities to the frontend via defined RPC methods.
+*   **gRPC Service (Backend):** ✅ IMPLEMENTED - Exposes simulation engine functionalities to the frontend via defined RPC methods.
 *   **Web Frontend (SPA):** Renders the UI, sends user commands to the backend, and visualizes received hypergraph states.
 
 ### Component Interactions
@@ -77,14 +77,14 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
     *   **Key Classes/Components:** `HypergraphVisualizer.tsx` and the chosen graph library.
 
 ### Communication (gRPC / gRPC-Web)
-*   **Service-Oriented Interface:**
+*   **Service-Oriented Interface:** ✅ IMPLEMENTED
     *   **Purpose:** To define a clear contract between frontend and backend.
     *   **Implementation:** A `.proto` file defines the `WolframPhysicsSimulatorService` with specific RPC methods for each action, including `InitializeSimulation`, `StepSimulation`, `RunSimulation`, `StopSimulation`, `GetCurrentState`, `SaveHypergraph`, and `LoadHypergraph`.
-    *   **Key Classes/Components:** `wolfram_physics.proto`, generated client stubs, backend service implementation.
-*   **Request-Response Pattern:**
+    *   **Key Classes/Components:** `wolfram_physics.proto`, generated client stubs, backend service implementation in `main.rs`.
+*   **Request-Response Pattern:** ✅ IMPLEMENTED
     *   **Purpose:** For operations that have a single request and a single response.
     *   **Implementation:** Used for `InitializeSimulation`, `StepSimulation`, `StopSimulation`, `GetCurrentState`, `SaveHypergraph`, `LoadHypergraph`.
-*   **Server-Streaming RPC:**
+*   **Server-Streaming RPC:** ✅ IMPLEMENTED
     *   **Purpose:** For continuous updates from the server to the client.
     *   **Implementation:** Used for `RunSimulation`, where the backend continuously streams `SimulationStateUpdate` messages.
 
@@ -154,10 +154,10 @@ The Wolfram Physics Simulator MVP employs a client-server architecture:
     *   `src/simulation/`: Simulation loop management, event tracking, and state management. ✅ IMPLEMENTED
     *   `src/serialization/`: State persistence, save/load functionality, and predefined examples. ✅ IMPLEMENTED
     *   `src/lib.rs`: Exposes the library functionality.
-    *   `src/main.rs`: Entry point and gRPC server implementation.
+    *   `src/main.rs`: Entry point and complete gRPC server implementation with all 7 RPC handlers. ✅ IMPLEMENTED
     *   `examples/`: Demonstration applications showcasing functionality.
 *   **`wolfram-sim-frontend/src`**: Contains all TypeScript SPA frontend code, including React components and gRPC-Web client.
-*   **`proto` (top-level)**: Canonical location for Protocol Buffer definitions.
+*   **`proto` (top-level)**: Canonical location for Protocol Buffer definitions. ✅ IMPLEMENTED
 
 ## Data Flow
 
