@@ -374,5 +374,127 @@ proto.wolfram_physics_simulator.WolframPhysicsSimulatorServicePromiseClient.prot
 };
 
 
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.wolfram_physics_simulator.SaveHypergraphRequest,
+ *   !proto.wolfram_physics_simulator.SaveHypergraphResponse>}
+ */
+const methodDescriptor_WolframPhysicsSimulatorService_SaveHypergraph = new grpc.web.MethodDescriptor(
+  '/wolfram_physics_simulator.WolframPhysicsSimulatorService/SaveHypergraph',
+  grpc.web.MethodType.UNARY,
+  proto.wolfram_physics_simulator.SaveHypergraphRequest,
+  proto.wolfram_physics_simulator.SaveHypergraphResponse,
+  /**
+   * @param {!proto.wolfram_physics_simulator.SaveHypergraphRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.wolfram_physics_simulator.SaveHypergraphResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.wolfram_physics_simulator.SaveHypergraphRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.wolfram_physics_simulator.SaveHypergraphResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.wolfram_physics_simulator.SaveHypergraphResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.wolfram_physics_simulator.WolframPhysicsSimulatorServiceClient.prototype.saveHypergraph =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/wolfram_physics_simulator.WolframPhysicsSimulatorService/SaveHypergraph',
+      request,
+      metadata || {},
+      methodDescriptor_WolframPhysicsSimulatorService_SaveHypergraph,
+      callback);
+};
+
+
+/**
+ * @param {!proto.wolfram_physics_simulator.SaveHypergraphRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.wolfram_physics_simulator.SaveHypergraphResponse>}
+ *     Promise that resolves to the response
+ */
+proto.wolfram_physics_simulator.WolframPhysicsSimulatorServicePromiseClient.prototype.saveHypergraph =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/wolfram_physics_simulator.WolframPhysicsSimulatorService/SaveHypergraph',
+      request,
+      metadata || {},
+      methodDescriptor_WolframPhysicsSimulatorService_SaveHypergraph);
+};
+
+
+/**
+ * @const
+ * @type {!grpc.web.MethodDescriptor<
+ *   !proto.wolfram_physics_simulator.LoadHypergraphRequest,
+ *   !proto.wolfram_physics_simulator.LoadHypergraphResponse>}
+ */
+const methodDescriptor_WolframPhysicsSimulatorService_LoadHypergraph = new grpc.web.MethodDescriptor(
+  '/wolfram_physics_simulator.WolframPhysicsSimulatorService/LoadHypergraph',
+  grpc.web.MethodType.UNARY,
+  proto.wolfram_physics_simulator.LoadHypergraphRequest,
+  proto.wolfram_physics_simulator.LoadHypergraphResponse,
+  /**
+   * @param {!proto.wolfram_physics_simulator.LoadHypergraphRequest} request
+   * @return {!Uint8Array}
+   */
+  function(request) {
+    return request.serializeBinary();
+  },
+  proto.wolfram_physics_simulator.LoadHypergraphResponse.deserializeBinary
+);
+
+
+/**
+ * @param {!proto.wolfram_physics_simulator.LoadHypergraphRequest} request The
+ *     request proto
+ * @param {?Object<string, string>} metadata User defined
+ *     call metadata
+ * @param {function(?grpc.web.RpcError, ?proto.wolfram_physics_simulator.LoadHypergraphResponse)}
+ *     callback The callback function(error, response)
+ * @return {!grpc.web.ClientReadableStream<!proto.wolfram_physics_simulator.LoadHypergraphResponse>|undefined}
+ *     The XHR Node Readable Stream
+ */
+proto.wolfram_physics_simulator.WolframPhysicsSimulatorServiceClient.prototype.loadHypergraph =
+    function(request, metadata, callback) {
+  return this.client_.rpcCall(this.hostname_ +
+      '/wolfram_physics_simulator.WolframPhysicsSimulatorService/LoadHypergraph',
+      request,
+      metadata || {},
+      methodDescriptor_WolframPhysicsSimulatorService_LoadHypergraph,
+      callback);
+};
+
+
+/**
+ * @param {!proto.wolfram_physics_simulator.LoadHypergraphRequest} request The
+ *     request proto
+ * @param {?Object<string, string>=} metadata User defined
+ *     call metadata
+ * @return {!Promise<!proto.wolfram_physics_simulator.LoadHypergraphResponse>}
+ *     Promise that resolves to the response
+ */
+proto.wolfram_physics_simulator.WolframPhysicsSimulatorServicePromiseClient.prototype.loadHypergraph =
+    function(request, metadata) {
+  return this.client_.unaryCall(this.hostname_ +
+      '/wolfram_physics_simulator.WolframPhysicsSimulatorService/LoadHypergraph',
+      request,
+      metadata || {},
+      methodDescriptor_WolframPhysicsSimulatorService_LoadHypergraph);
+};
+
+
 module.exports = proto.wolfram_physics_simulator;
 

@@ -40,15 +40,29 @@ This document outlines the technical stack, dependencies, and development enviro
 *   **Rust** (latest stable version) - for backend development
 *   **Node.js & npm/yarn** - for frontend development using Vite  
 *   **Protocol Buffer Compiler** (`protoc`) - for gRPC code generation
+*   **gRPC Protocol Buffer Plugins** - Required for JavaScript/TypeScript generation:
+    *   `protoc-gen-grpc-web` - for gRPC-Web client generation
+    *   `protoc-gen-js` - for JavaScript protobuf message generation
 *   **Cargo** - Rust package manager
 
 ### Setup Instructions ✅ VERIFIED
 1.  Install Rust: `curl --proto \'=https\' --tlsv1.2 -sSf https://sh.rustup.rs | sh`
 2.  Install Node.js and npm/yarn package manager
-3.  Install `protoc` and necessary gRPC plugins for Rust and Web
+3.  Install `protoc` and necessary gRPC plugins:
+    ```bash
+    # Install protoc (Protocol Buffer Compiler)
+    brew install protobuf  # macOS
+    
+    # Install gRPC plugins for JavaScript/TypeScript generation
+    brew install protoc-gen-grpc-web  # Installs both protoc-gen-grpc-web and protoc-gen-js
+    
+    # Alternative if Homebrew doesn't work:
+    npm install -g protoc-gen-js
+    ```
 4.  Clone the repository
 5.  Install frontend dependencies: `cd wolfram-sim-frontend && npm install`
 6.  Build backend: `cd wolfram-sim-rust && cargo build`
+7.  Generate proto files (if needed): `cd wolfram-sim-frontend && npm run generate-proto`
 
 ### Running Locally ✅ OPERATIONAL
 *   **Backend**: `cd wolfram-sim-rust && cargo run` (Starts gRPC service on [::1]:50051)

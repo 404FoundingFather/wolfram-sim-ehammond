@@ -11,6 +11,44 @@ This guide provides a quick lookup for key terms, features, and identifiers from
 **Backend Service:** ✅ Running on port 50051  
 **Frontend Service:** ✅ Running on port 3000
 
+## 🛠️ Quick Setup Commands
+
+### Prerequisites Installation
+```bash
+# Install Rust
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+# Install Node.js (download from nodejs.org)
+
+# Install protoc and required plugins
+brew install protobuf
+brew install protoc-gen-grpc-web  # Also installs protoc-gen-js
+
+# Alternative for plugins if Homebrew fails:
+npm install -g protoc-gen-js
+```
+
+### Start Development Environment
+```bash
+# Terminal 1: Start backend
+cd wolfram-sim-rust && cargo run --quiet
+
+# Terminal 2: Start frontend  
+cd wolfram-sim-frontend && npm run dev
+
+# Access: http://localhost:3000
+```
+
+### Common Troubleshooting
+```bash
+# Proto generation errors
+npm run generate-proto  # In wolfram-sim-frontend/
+
+# Build errors
+cargo clean && cargo build  # In wolfram-sim-rust/
+rm -rf node_modules && npm install  # In wolfram-sim-frontend/
+```
+
 ## Core Components & Technologies
 
 -   **Simulation Engine**: Rust (Backend) ✅ IMPLEMENTED

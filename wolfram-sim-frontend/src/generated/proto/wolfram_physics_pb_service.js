@@ -55,6 +55,24 @@ WolframPhysicsSimulatorService.GetCurrentState = {
   responseType: wolfram_physics_pb.SimulationStateUpdate
 };
 
+WolframPhysicsSimulatorService.SaveHypergraph = {
+  methodName: "SaveHypergraph",
+  service: WolframPhysicsSimulatorService,
+  requestStream: false,
+  responseStream: false,
+  requestType: wolfram_physics_pb.SaveHypergraphRequest,
+  responseType: wolfram_physics_pb.SaveHypergraphResponse
+};
+
+WolframPhysicsSimulatorService.LoadHypergraph = {
+  methodName: "LoadHypergraph",
+  service: WolframPhysicsSimulatorService,
+  requestStream: false,
+  responseStream: false,
+  requestType: wolfram_physics_pb.LoadHypergraphRequest,
+  responseType: wolfram_physics_pb.LoadHypergraphResponse
+};
+
 exports.WolframPhysicsSimulatorService = WolframPhysicsSimulatorService;
 
 function WolframPhysicsSimulatorServiceClient(serviceHost, options) {
@@ -199,6 +217,68 @@ WolframPhysicsSimulatorServiceClient.prototype.getCurrentState = function getCur
     callback = arguments[1];
   }
   var client = grpc.unary(WolframPhysicsSimulatorService.GetCurrentState, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+WolframPhysicsSimulatorServiceClient.prototype.saveHypergraph = function saveHypergraph(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(WolframPhysicsSimulatorService.SaveHypergraph, {
+    request: requestMessage,
+    host: this.serviceHost,
+    metadata: metadata,
+    transport: this.options.transport,
+    debug: this.options.debug,
+    onEnd: function (response) {
+      if (callback) {
+        if (response.status !== grpc.Code.OK) {
+          var err = new Error(response.statusMessage);
+          err.code = response.status;
+          err.metadata = response.trailers;
+          callback(err, null);
+        } else {
+          callback(null, response.message);
+        }
+      }
+    }
+  });
+  return {
+    cancel: function () {
+      callback = null;
+      client.close();
+    }
+  };
+};
+
+WolframPhysicsSimulatorServiceClient.prototype.loadHypergraph = function loadHypergraph(requestMessage, metadata, callback) {
+  if (arguments.length === 2) {
+    callback = arguments[1];
+  }
+  var client = grpc.unary(WolframPhysicsSimulatorService.LoadHypergraph, {
     request: requestMessage,
     host: this.serviceHost,
     metadata: metadata,

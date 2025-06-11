@@ -49,6 +49,24 @@ type WolframPhysicsSimulatorServiceGetCurrentState = {
   readonly responseType: typeof wolfram_physics_pb.SimulationStateUpdate;
 };
 
+type WolframPhysicsSimulatorServiceSaveHypergraph = {
+  readonly methodName: string;
+  readonly service: typeof WolframPhysicsSimulatorService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof wolfram_physics_pb.SaveHypergraphRequest;
+  readonly responseType: typeof wolfram_physics_pb.SaveHypergraphResponse;
+};
+
+type WolframPhysicsSimulatorServiceLoadHypergraph = {
+  readonly methodName: string;
+  readonly service: typeof WolframPhysicsSimulatorService;
+  readonly requestStream: false;
+  readonly responseStream: false;
+  readonly requestType: typeof wolfram_physics_pb.LoadHypergraphRequest;
+  readonly responseType: typeof wolfram_physics_pb.LoadHypergraphResponse;
+};
+
 export class WolframPhysicsSimulatorService {
   static readonly serviceName: string;
   static readonly InitializeSimulation: WolframPhysicsSimulatorServiceInitializeSimulation;
@@ -56,6 +74,8 @@ export class WolframPhysicsSimulatorService {
   static readonly RunSimulation: WolframPhysicsSimulatorServiceRunSimulation;
   static readonly StopSimulation: WolframPhysicsSimulatorServiceStopSimulation;
   static readonly GetCurrentState: WolframPhysicsSimulatorServiceGetCurrentState;
+  static readonly SaveHypergraph: WolframPhysicsSimulatorServiceSaveHypergraph;
+  static readonly LoadHypergraph: WolframPhysicsSimulatorServiceLoadHypergraph;
 }
 
 export type ServiceError = { message: string, code: number; metadata: grpc.Metadata }
@@ -126,6 +146,24 @@ export class WolframPhysicsSimulatorServiceClient {
   getCurrentState(
     requestMessage: wolfram_physics_pb.GetCurrentStateRequest,
     callback: (error: ServiceError|null, responseMessage: wolfram_physics_pb.SimulationStateUpdate|null) => void
+  ): UnaryResponse;
+  saveHypergraph(
+    requestMessage: wolfram_physics_pb.SaveHypergraphRequest,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: wolfram_physics_pb.SaveHypergraphResponse|null) => void
+  ): UnaryResponse;
+  saveHypergraph(
+    requestMessage: wolfram_physics_pb.SaveHypergraphRequest,
+    callback: (error: ServiceError|null, responseMessage: wolfram_physics_pb.SaveHypergraphResponse|null) => void
+  ): UnaryResponse;
+  loadHypergraph(
+    requestMessage: wolfram_physics_pb.LoadHypergraphRequest,
+    metadata: grpc.Metadata,
+    callback: (error: ServiceError|null, responseMessage: wolfram_physics_pb.LoadHypergraphResponse|null) => void
+  ): UnaryResponse;
+  loadHypergraph(
+    requestMessage: wolfram_physics_pb.LoadHypergraphRequest,
+    callback: (error: ServiceError|null, responseMessage: wolfram_physics_pb.LoadHypergraphResponse|null) => void
   ): UnaryResponse;
 }
 

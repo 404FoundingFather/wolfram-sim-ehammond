@@ -13,7 +13,11 @@ import {
   HypergraphState,
   Atom,
   Relation,
-  SimulationEvent
+  SimulationEvent,
+  SaveHypergraphRequest,
+  SaveHypergraphResponse,
+  LoadHypergraphRequest,
+  LoadHypergraphResponse
 } from '../generated/proto/wolfram_physics_pb';
 
 // Types for easier frontend usage
@@ -243,28 +247,81 @@ export class WolframApiClient {
     });
   }
 
-  // Placeholder methods for save/load that will be implemented when proto generation is fixed
+  // Save hypergraph
   async saveHypergraph(options: {
     filename?: string;
     overwriteExisting?: boolean;
     prettyPrint?: boolean;
   } = {}): Promise<{ success: boolean; message: string; filePath?: string }> {
-    // For now, return a mock response
-    return Promise.resolve({
-      success: false,
-      message: 'Save/Load functionality will be available when proto generation is complete'
+    return new Promise((resolve, reject) => {
+      const request = new SaveHypergraphRequest();
+      
+      if (options.filename) {
+        request.setFilename(options.filename);
+      }
+      if (options.overwriteExisting !== undefined) {
+        request.setOverwriteExisting(options.overwriteExisting);
+      }
+      if (options.prettyPrint !== undefined) {
+        request.setPrettyPrint(options.prettyPrint);
+      }
+
+      this.client.saveHypergraph(request, {}, (err: any, response: SaveHypergraphResponse) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        if (!response) {
+          reject(new Error('No response received'));
+          return;
+        }
+
+        resolve({
+          success: response.getSuccess(),
+          message: response.getMessage(),
+          filePath: response.getFilePath()
+        });
+      });
     });
   }
 
+  // Load hypergraph
   async loadHypergraph(source: {
     predefinedExampleName?: string;
     fileContent?: string;
     filePath?: string;
   }): Promise<{ success: boolean; message: string; loadedState?: ApiHypergraphState }> {
-    // For now, return a mock response  
-    return Promise.resolve({
-      success: false,
-      message: 'Save/Load functionality will be available when proto generation is complete'
+    return new Promise((resolve, reject) => {
+      const request = new LoadHypergraphRequest();
+      
+      if (source.predefinedExampleName) {
+        request.setPredefinedExampleName(source.predefinedExampleName);
+      } else if (source.fileContent) {
+        request.setFileContent(source.fileContent);
+      } else if (source.filePath) {
+        request.setFilePath(source.filePath);
+      }
+
+      this.client.loadHypergraph(request, {}, (err: any, response: LoadHypergraphResponse) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+
+        if (!response) {
+          reject(new Error('No response received'));
+          return;
+        }
+
+        resolve({
+          success: response.getSuccess(),
+          message: response.getMessage(),
+          loadedState: response.getLoadedState() 
+            ? convertHypergraphStateFromProto(response.getLoadedState()!)
+            : undefined
+        });
+      });
     });
   }
 }

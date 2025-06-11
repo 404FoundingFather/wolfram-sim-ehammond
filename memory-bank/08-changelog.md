@@ -6,6 +6,21 @@ This document tracks significant changes to the project in chronological order, 
 
 ## [Unreleased] - MVP Development
 
+### Fixed
+- **Documentation & Setup: Protoc Plugin Requirements (2025-06-11):**
+    - Fixed missing protoc plugin installation requirements in documentation
+    - Added `protoc-gen-grpc-web` and `protoc-gen-js` plugin requirements to:
+        - README.md Prerequisites section with installation commands
+        - memory-bank/02-techContext.md Requirements and Setup sections  
+        - memory-bank/09-environment.md Prerequisites with detailed notes
+        - memory-bank/13-quick-reference.md Quick Setup Commands section
+    - Added comprehensive troubleshooting section for proto generation errors
+    - Resolved frontend import errors: "does not provide an export named 'Atom'"
+    - Updated project structure documentation to match current implementation
+    - **Critical Fix**: Without these plugins, proto generation fails with "protoc-gen-js: program not found"
+    - This resolves a major setup blocker for new developers joining the project
+    - All documentation now includes: `brew install protoc-gen-grpc-web` as a prerequisite
+
 ### Added
 - **🎉 Sprint 5: Web Frontend Development - MVP COMPLETION! (2025-06-11):**
     - ✅ Successfully completed ALL MVP development with comprehensive web frontend implementation (F3.1, F3.2, F3.3, F3.4)

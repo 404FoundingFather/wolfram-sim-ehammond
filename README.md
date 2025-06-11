@@ -58,6 +58,14 @@ The **Wolfram Physics Simulator** is a complete interactive web application for 
 - **Rust** (latest stable) - [Install here](https://rustup.rs/)
 - **Node.js & npm** (v18+) - [Install here](https://nodejs.org/)
 - **Protocol Buffer Compiler** (`protoc`) - [Install here](https://grpc.io/docs/protoc-installation/)
+- **gRPC Protocol Buffer Plugins** - Required for JavaScript/TypeScript generation:
+  ```bash
+  # macOS (via Homebrew)
+  brew install protoc-gen-grpc-web
+
+  # Alternative: Install globally via npm (if needed)
+  npm install -g protoc-gen-js
+  ```
 
 ### ⚡ Start the MVP (2 commands)
 
@@ -248,6 +256,21 @@ kill -9 <PID>
 cd wolfram-sim-rust && cargo clean && cargo build
 cd wolfram-sim-frontend && rm -rf node_modules && npm install
 ```
+
+**❌ Proto generation errors:**
+```bash
+# If you see "protoc-gen-js: program not found" or similar:
+brew install protoc-gen-grpc-web  # Installs both protoc-gen-grpc-web and protoc-gen-js
+npm install -g protoc-gen-js      # Alternative if Homebrew doesn't work
+
+# Regenerate proto files
+cd wolfram-sim-frontend && npm run generate-proto
+```
+
+**❌ Import errors like "does not provide an export named 'Atom'":**
+- This usually indicates proto files need to be regenerated
+- Ensure protoc plugins are installed (see above)
+- Regenerate: `cd wolfram-sim-frontend && npm run generate-proto`
 
 ### Performance Tips
 

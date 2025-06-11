@@ -17,38 +17,48 @@ This document provides detailed information about the development environment fo
 -   **Protocol Buffer Compiler (`protoc`):** Required for generating code from `.proto` files.
     -   macOS (via Homebrew): `brew install protobuf`
     -   Verify with `protoc --version`.
--   **gRPC-Web Code Generator Plugins for `protoc`:**
+-   **gRPC-Web Code Generator Plugins for `protoc`:** **CRITICAL FOR FRONTEND BUILD**
     -   `protoc-gen-grpc-web`: Generates gRPC-Web client stubs.
         -   macOS (via Homebrew): `brew install protoc-gen-grpc-web`
         -   This Homebrew formula also installs `protoc-gen-js` as a dependency, which is used by `protoc` for the `--js_out` flag.
+        -   **Note**: Without these plugins, you'll get errors like "protoc-gen-js: program not found" or import errors like "does not provide an export named 'Atom'"
     -   `ts-protoc-gen`: An npm package used as a `protoc` plugin to generate TypeScript definitions (`.d.ts`) for messages and service clients.
         -   Installed as a dev dependency in the frontend project: `npm install --save-dev ts-protoc-gen`
+    -   **Alternative installation**: If Homebrew fails, install globally via npm: `npm install -g protoc-gen-js`
 -   **Rust gRPC Build Tooling:**
     -   `tonic-build`: A Cargo build dependency used in `build.rs` to compile `.proto` files for the Rust backend. Added to `wolfram-sim-rust/Cargo.toml`.
 
 ### Project Structure
 
-The project is organized as follows in the `wolfram-sim` workspace root:
+The project is organized as follows in the `wolfram-sim-ehammond` workspace root:
 
 ```
-wolfram-sim/
-├── proto/                      # Protocol Buffer definitions (.proto files)
+wolfram-sim-ehammond/
+├── proto/                          # Protocol Buffer definitions (.proto files)
 │   └── wolfram_physics.proto
-├── backend/                    # Contains all backend Rust code
-│   ├── wolfram_engine_core/    # Core simulation library crate
-│   │   ├── src/                # Library source (lib.rs, modules like hypergraph/, rules/, etc.)
-│   │   └── Cargo.toml
-│   ├── grpc_server/            # gRPC server binary crate
-│   │   ├── src/                # Binary source (main.rs, server.rs)
-│   │   └── Cargo.toml
-│   └── proto/                  # Optional: build-time copy/link of .proto files for tonic-build
-├── wolfram-sim-frontend/       # TypeScript React SPA (gRPC client, visualization)
+├── wolfram-sim-rust/              # Rust backend (single crate)
+│   ├── src/
+│   │   ├── main.rs                # gRPC server entry point
+│   │   ├── lib.rs                 # Library exports
+│   │   ├── hypergraph/            # Core data structures
+│   │   ├── rules/                 # Rule engine
+│   │   ├── matching/              # Pattern matching
+│   │   ├── evolution/             # Hypergraph rewriting
+│   │   ├── simulation/            # Simulation management
+│   │   └── serialization/         # State persistence
+│   ├── Cargo.toml
+│   └── examples/                  # Demo applications
+├── wolfram-sim-frontend/          # TypeScript React SPA (gRPC client, visualization)
 │   ├── package.json
 │   ├── vite.config.ts
 │   └── src/
-│       ├── generated/proto/    # Auto-generated client-side gRPC code
-│       └── ...                 # React components, etc.
-└── ...                         # Other project files (docs, memory-bank, etc.)
+│       ├── generated/proto/       # Auto-generated client-side gRPC code
+│       ├── components/            # React components
+│       ├── services/             # API client
+│       └── store/                # State management
+├── memory-bank/                   # Project documentation
+├── docs/                         # Technical documentation
+└── README.md                     # Project overview and setup
 ```
 
 ### Setup Instructions

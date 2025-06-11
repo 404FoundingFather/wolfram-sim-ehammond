@@ -56,6 +56,15 @@ export class HypergraphState extends jspb.Message {
   setRelationsList(value: Array<Relation>): void;
   addRelations(value?: Relation, index?: number): Relation;
 
+  getStepNumber(): number;
+  setStepNumber(value: number): void;
+
+  getNextAtomId(): number;
+  setNextAtomId(value: number): void;
+
+  getNextRelationId(): number;
+  setNextRelationId(value: number): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): HypergraphState.AsObject;
   static toObject(includeInstance: boolean, msg: HypergraphState): HypergraphState.AsObject;
@@ -70,6 +79,9 @@ export namespace HypergraphState {
   export type AsObject = {
     atomsList: Array<Atom.AsObject>,
     relationsList: Array<Relation.AsObject>,
+    stepNumber: number,
+    nextAtomId: number,
+    nextRelationId: number,
   }
 }
 
@@ -90,6 +102,27 @@ export class SimulationEvent extends jspb.Message {
   setAtomsInvolvedOutputList(value: Array<string>): void;
   addAtomsInvolvedOutput(value: string, index?: number): string;
 
+  getStepNumber(): number;
+  setStepNumber(value: number): void;
+
+  clearAtomsCreatedList(): void;
+  getAtomsCreatedList(): Array<string>;
+  setAtomsCreatedList(value: Array<string>): void;
+  addAtomsCreated(value: string, index?: number): string;
+
+  clearRelationsCreatedList(): void;
+  getRelationsCreatedList(): Array<string>;
+  setRelationsCreatedList(value: Array<string>): void;
+  addRelationsCreated(value: string, index?: number): string;
+
+  clearRelationsRemovedList(): void;
+  getRelationsRemovedList(): Array<string>;
+  setRelationsRemovedList(value: Array<string>): void;
+  addRelationsRemoved(value: string, index?: number): string;
+
+  getDescription(): string;
+  setDescription(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SimulationEvent.AsObject;
   static toObject(includeInstance: boolean, msg: SimulationEvent): SimulationEvent.AsObject;
@@ -106,6 +139,11 @@ export namespace SimulationEvent {
     ruleIdApplied: string,
     atomsInvolvedInputList: Array<string>,
     atomsInvolvedOutputList: Array<string>,
+    stepNumber: number,
+    atomsCreatedList: Array<string>,
+    relationsCreatedList: Array<string>,
+    relationsRemovedList: Array<string>,
+    description: string,
   }
 }
 
@@ -205,6 +243,12 @@ export class StepResponse extends jspb.Message {
   getCurrentStepNumber(): number;
   setCurrentStepNumber(value: number): void;
 
+  getSuccess(): boolean;
+  setSuccess(value: boolean): void;
+
+  getMessage(): string;
+  setMessage(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): StepResponse.AsObject;
   static toObject(includeInstance: boolean, msg: StepResponse): StepResponse.AsObject;
@@ -220,12 +264,22 @@ export namespace StepResponse {
     newHypergraphState?: HypergraphState.AsObject,
     eventsOccurredList: Array<SimulationEvent.AsObject>,
     currentStepNumber: number,
+    success: boolean,
+    message: string,
   }
 }
 
 export class RunRequest extends jspb.Message {
   getUpdateIntervalMs(): number;
   setUpdateIntervalMs(value: number): void;
+
+  hasMaxSteps(): boolean;
+  clearMaxSteps(): void;
+  getMaxSteps(): number;
+  setMaxSteps(value: number): void;
+
+  getStopOnFixedPoint(): boolean;
+  setStopOnFixedPoint(value: boolean): void;
 
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): RunRequest.AsObject;
@@ -240,6 +294,8 @@ export class RunRequest extends jspb.Message {
 export namespace RunRequest {
   export type AsObject = {
     updateIntervalMs: number,
+    maxSteps: number,
+    stopOnFixedPoint: boolean,
   }
 }
 
@@ -257,6 +313,12 @@ export class SimulationStateUpdate extends jspb.Message {
   getStepNumber(): number;
   setStepNumber(value: number): void;
 
+  getIsRunning(): boolean;
+  setIsRunning(value: boolean): void;
+
+  getStatusMessage(): string;
+  setStatusMessage(value: string): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): SimulationStateUpdate.AsObject;
   static toObject(includeInstance: boolean, msg: SimulationStateUpdate): SimulationStateUpdate.AsObject;
@@ -272,6 +334,8 @@ export namespace SimulationStateUpdate {
     currentGraph?: HypergraphState.AsObject,
     recentEventsList: Array<SimulationEvent.AsObject>,
     stepNumber: number,
+    isRunning: boolean,
+    statusMessage: string,
   }
 }
 
@@ -298,6 +362,11 @@ export class StopResponse extends jspb.Message {
   getMessage(): string;
   setMessage(value: string): void;
 
+  hasFinalState(): boolean;
+  clearFinalState(): void;
+  getFinalState(): HypergraphState | undefined;
+  setFinalState(value?: HypergraphState): void;
+
   serializeBinary(): Uint8Array;
   toObject(includeInstance?: boolean): StopResponse.AsObject;
   static toObject(includeInstance: boolean, msg: StopResponse): StopResponse.AsObject;
@@ -312,6 +381,7 @@ export namespace StopResponse {
   export type AsObject = {
     success: boolean,
     message: string,
+    finalState?: HypergraphState.AsObject,
   }
 }
 
@@ -328,6 +398,206 @@ export class GetCurrentStateRequest extends jspb.Message {
 
 export namespace GetCurrentStateRequest {
   export type AsObject = {
+  }
+}
+
+export class SaveHypergraphRequest extends jspb.Message {
+  hasFilename(): boolean;
+  clearFilename(): void;
+  getFilename(): string;
+  setFilename(value: string): void;
+
+  getOverwriteExisting(): boolean;
+  setOverwriteExisting(value: boolean): void;
+
+  getPrettyPrint(): boolean;
+  setPrettyPrint(value: boolean): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SaveHypergraphRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: SaveHypergraphRequest): SaveHypergraphRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SaveHypergraphRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SaveHypergraphRequest;
+  static deserializeBinaryFromReader(message: SaveHypergraphRequest, reader: jspb.BinaryReader): SaveHypergraphRequest;
+}
+
+export namespace SaveHypergraphRequest {
+  export type AsObject = {
+    filename: string,
+    overwriteExisting: boolean,
+    prettyPrint: boolean,
+  }
+}
+
+export class SaveHypergraphResponse extends jspb.Message {
+  getSuccess(): boolean;
+  setSuccess(value: boolean): void;
+
+  getMessage(): string;
+  setMessage(value: string): void;
+
+  getFilePath(): string;
+  setFilePath(value: string): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): SaveHypergraphResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: SaveHypergraphResponse): SaveHypergraphResponse.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: SaveHypergraphResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): SaveHypergraphResponse;
+  static deserializeBinaryFromReader(message: SaveHypergraphResponse, reader: jspb.BinaryReader): SaveHypergraphResponse;
+}
+
+export namespace SaveHypergraphResponse {
+  export type AsObject = {
+    success: boolean,
+    message: string,
+    filePath: string,
+  }
+}
+
+export class LoadHypergraphRequest extends jspb.Message {
+  hasPredefinedExampleName(): boolean;
+  clearPredefinedExampleName(): void;
+  getPredefinedExampleName(): string;
+  setPredefinedExampleName(value: string): void;
+
+  hasFileContent(): boolean;
+  clearFileContent(): void;
+  getFileContent(): string;
+  setFileContent(value: string): void;
+
+  hasFilePath(): boolean;
+  clearFilePath(): void;
+  getFilePath(): string;
+  setFilePath(value: string): void;
+
+  getSourceCase(): LoadHypergraphRequest.SourceCase;
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): LoadHypergraphRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: LoadHypergraphRequest): LoadHypergraphRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: LoadHypergraphRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): LoadHypergraphRequest;
+  static deserializeBinaryFromReader(message: LoadHypergraphRequest, reader: jspb.BinaryReader): LoadHypergraphRequest;
+}
+
+export namespace LoadHypergraphRequest {
+  export type AsObject = {
+    predefinedExampleName: string,
+    fileContent: string,
+    filePath: string,
+  }
+
+  export enum SourceCase {
+    SOURCE_NOT_SET = 0,
+    PREDEFINED_EXAMPLE_NAME = 1,
+    FILE_CONTENT = 2,
+    FILE_PATH = 3,
+  }
+}
+
+export class LoadHypergraphResponse extends jspb.Message {
+  getSuccess(): boolean;
+  setSuccess(value: boolean): void;
+
+  getMessage(): string;
+  setMessage(value: string): void;
+
+  hasLoadedState(): boolean;
+  clearLoadedState(): void;
+  getLoadedState(): HypergraphState | undefined;
+  setLoadedState(value?: HypergraphState): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): LoadHypergraphResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: LoadHypergraphResponse): LoadHypergraphResponse.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: LoadHypergraphResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): LoadHypergraphResponse;
+  static deserializeBinaryFromReader(message: LoadHypergraphResponse, reader: jspb.BinaryReader): LoadHypergraphResponse;
+}
+
+export namespace LoadHypergraphResponse {
+  export type AsObject = {
+    success: boolean,
+    message: string,
+    loadedState?: HypergraphState.AsObject,
+  }
+}
+
+export class ListPredefinedExamplesRequest extends jspb.Message {
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ListPredefinedExamplesRequest.AsObject;
+  static toObject(includeInstance: boolean, msg: ListPredefinedExamplesRequest): ListPredefinedExamplesRequest.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ListPredefinedExamplesRequest, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ListPredefinedExamplesRequest;
+  static deserializeBinaryFromReader(message: ListPredefinedExamplesRequest, reader: jspb.BinaryReader): ListPredefinedExamplesRequest;
+}
+
+export namespace ListPredefinedExamplesRequest {
+  export type AsObject = {
+  }
+}
+
+export class PredefinedExampleInfo extends jspb.Message {
+  getName(): string;
+  setName(value: string): void;
+
+  getDescription(): string;
+  setDescription(value: string): void;
+
+  getAtomCount(): number;
+  setAtomCount(value: number): void;
+
+  getRelationCount(): number;
+  setRelationCount(value: number): void;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): PredefinedExampleInfo.AsObject;
+  static toObject(includeInstance: boolean, msg: PredefinedExampleInfo): PredefinedExampleInfo.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: PredefinedExampleInfo, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): PredefinedExampleInfo;
+  static deserializeBinaryFromReader(message: PredefinedExampleInfo, reader: jspb.BinaryReader): PredefinedExampleInfo;
+}
+
+export namespace PredefinedExampleInfo {
+  export type AsObject = {
+    name: string,
+    description: string,
+    atomCount: number,
+    relationCount: number,
+  }
+}
+
+export class ListPredefinedExamplesResponse extends jspb.Message {
+  clearExamplesList(): void;
+  getExamplesList(): Array<PredefinedExampleInfo>;
+  setExamplesList(value: Array<PredefinedExampleInfo>): void;
+  addExamples(value?: PredefinedExampleInfo, index?: number): PredefinedExampleInfo;
+
+  serializeBinary(): Uint8Array;
+  toObject(includeInstance?: boolean): ListPredefinedExamplesResponse.AsObject;
+  static toObject(includeInstance: boolean, msg: ListPredefinedExamplesResponse): ListPredefinedExamplesResponse.AsObject;
+  static extensions: {[key: number]: jspb.ExtensionFieldInfo<jspb.Message>};
+  static extensionsBinary: {[key: number]: jspb.ExtensionFieldBinaryInfo<jspb.Message>};
+  static serializeBinaryToWriter(message: ListPredefinedExamplesResponse, writer: jspb.BinaryWriter): void;
+  static deserializeBinary(bytes: Uint8Array): ListPredefinedExamplesResponse;
+  static deserializeBinaryFromReader(message: ListPredefinedExamplesResponse, reader: jspb.BinaryReader): ListPredefinedExamplesResponse;
+}
+
+export namespace ListPredefinedExamplesResponse {
+  export type AsObject = {
+    examplesList: Array<PredefinedExampleInfo.AsObject>,
   }
 }
 
